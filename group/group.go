@@ -28,7 +28,6 @@ func By(grouper Grouper, functionBy func(obj interface{}) interface{}) (result m
 	if grouper.IsEmpty() {
 		return
 	}
-
 	for i := 0; i < grouper.Size(); i++ {
 		obj := grouper.Get(i)
 		// 分组的key
@@ -37,6 +36,58 @@ func By(grouper Grouper, functionBy func(obj interface{}) interface{}) (result m
 			result[key] = []interface{}{obj}
 		} else {
 			result[key] = append(result[key], obj)
+		}
+	}
+	return
+}
+
+func BySlice(grouper []interface{}, functionBy func(obj interface{}) interface{}) (result map[interface{}][]interface{}) {
+	result = make(map[interface{}][]interface{})
+	if len(grouper) == 0 {
+		return
+	}
+	for _, obj := range grouper {
+		// 分组的key
+		key := functionBy(obj)
+		if _, ok := result[key]; !ok {
+			result[key] = []interface{}{obj}
+		} else {
+			result[key] = append(result[key], obj)
+		}
+	}
+	return
+}
+
+func BySliceCount(grouper []interface{}, functionBy func(obj interface{}) interface{}) (result map[interface{}]int) {
+	result = map[interface{}]int{}
+	if len(grouper) == 0 {
+		return
+	}
+	for _, obj := range grouper {
+		// 分组的key
+		key := functionBy(obj)
+		if _, ok := result[key]; !ok {
+			result[key] = 1
+		} else {
+			result[key] += 1
+		}
+	}
+	return
+}
+
+func ByCount(grouper Grouper, functionBy func(obj interface{}) interface{}) (result map[interface{}]int) {
+	result = map[interface{}]int{}
+	if grouper.IsEmpty() {
+		return
+	}
+	for i := 0; i < grouper.Size(); i++ {
+		obj := grouper.Get(i)
+		// 分组的key
+		key := functionBy(obj)
+		if _, ok := result[key]; !ok {
+			result[key] = 1
+		} else {
+			result[key] += 1
 		}
 	}
 	return

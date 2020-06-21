@@ -36,10 +36,12 @@ func (l List) IsEmpty() bool {
 	return len(l) == 0
 }
 
+const n = 100000000
+
 func TestBy(t *testing.T) {
 	list := make(List, 0)
 	result := make(map[interface{}][]interface{})
-	for i := 0; i < 100; i++ {
+	for i := 0; i < n; i++ {
 		list = append(list, i)
 		result[i%2] = append(result[i%2], i)
 	}
@@ -72,9 +74,9 @@ func TestBy(t *testing.T) {
 	}
 }
 
-func Benchmark(b *testing.B) {
+func BenchmarkBy(b *testing.B) {
 	list := make(List, 0)
-	for i := 0; i < 100000; i++ {
+	for i := 0; i < n; i++ {
 		list = append(list, i)
 	}
 	b.ResetTimer()
@@ -82,6 +84,50 @@ func Benchmark(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		By(list, func(obj interface{}) interface{} {
+			return obj.(int) % 2
+		})
+	}
+}
+func BenchmarkBySlice(b *testing.B) {
+	list := make([]interface{}, 0)
+	for i := 0; i < n; i++ {
+		list = append(list, i)
+	}
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		BySlice(list, func(obj interface{}) interface{} {
+			return obj.(int) % 2
+		})
+	}
+}
+
+func BenchmarkByCount(b *testing.B) {
+	list := make(List, 0)
+	for i := 0; i < n; i++ {
+		list = append(list, i)
+	}
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		ByCount(list, func(obj interface{}) interface{} {
+			return obj.(int) % 2
+		})
+	}
+}
+
+func BenchmarkBySliceCount(b *testing.B) {
+	list := make([]interface{}, 0)
+	for i := 0; i < n; i++ {
+		list = append(list, i)
+	}
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		BySliceCount(list, func(obj interface{}) interface{} {
 			return obj.(int) % 2
 		})
 	}
