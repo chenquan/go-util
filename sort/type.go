@@ -15,7 +15,7 @@
  *
  */
 
-package sorted
+package sort
 
 type Uint64s []uint64
 type Uint32s []uint32

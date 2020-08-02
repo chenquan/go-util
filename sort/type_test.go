@@ -15,7 +15,7 @@
  *
  */
 
-package sorted
+package sort
 
 import (
 	"fmt"
