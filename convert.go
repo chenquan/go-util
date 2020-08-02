@@ -28,7 +28,7 @@ func ToString(b *[]byte) string {
 	return *(*string)(unsafe.Pointer(b))
 }
 
-// ToBytes 不重新分配 内存将字符串转换为字节切片
+// ToBytes 不重新分配内存将字符串转换为字节切片
 func ToBytes(v string) (b []byte) {
 	strHeader := (*reflect.StringHeader)(unsafe.Pointer(&v))
 	byteHeader := (*reflect.SliceHeader)(unsafe.Pointer(&b))
