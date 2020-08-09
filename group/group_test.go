@@ -33,18 +33,25 @@ func (l List) Get(i int) interface{} {
 }
 
 func (l List) IsEmpty() bool {
-	return len(l) == 0
+	return l.Size() == 0
 }
 
-const n = 100000000
+const n = 10000
 
 func TestBy(t *testing.T) {
-	list := make(List, 0)
-	result := make(map[interface{}][]interface{})
+	list1 := make(List, 0)
+	result1 := make(map[interface{}][]interface{})
 	for i := 0; i < n; i++ {
-		list = append(list, i)
-		result[i%2] = append(result[i%2], i)
+		list1 = append(list1, i)
+		result1[i%2] = append(result1[i%2], i)
 	}
+	list2 := make(List, 0)
+	result2 := make(map[interface{}][]interface{})
+	for i := 0; i < n; i++ {
+		list2 = append(list2, i)
+		result2[i%3] = append(result2[i%3], i)
+	}
+
 	type args struct {
 		grouper    Grouper
 		functionBy func(interface{}) interface{}
@@ -57,17 +64,79 @@ func TestBy(t *testing.T) {
 		{
 			"1",
 			args{
-				list,
+				list1,
 				func(obj interface{}) interface{} {
 					return obj.(int) % 2
 				},
 			},
-			result,
+			result1,
+		},
+		{
+			"2",
+			args{
+				list2,
+				func(obj interface{}) interface{} {
+					return obj.(int) % 3
+				},
+			},
+			result2,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotResult := By(tt.args.grouper, tt.args.functionBy); !reflect.DeepEqual(gotResult, tt.wantResult) {
+				t.Errorf("By() = %v, want %v", gotResult, tt.wantResult)
+			}
+		})
+	}
+}
+func TestByCount(t *testing.T) {
+	list1 := make(List, 0)
+	result1 := make(map[interface{}]int)
+	for i := 0; i < n; i++ {
+		list1 = append(list1, i)
+		result1[i%2] += 1
+	}
+	list2 := make(List, 0)
+	result2 := make(map[interface{}]int)
+	for i := 0; i < n; i++ {
+		list2 = append(list2, i)
+		result2[i%3] += 1
+	}
+
+	type args struct {
+		grouper    Grouper
+		functionBy func(interface{}) interface{}
+	}
+	tests := []struct {
+		name       string
+		args       args
+		wantResult map[interface{}]int
+	}{
+		{
+			"1",
+			args{
+				list1,
+				func(obj interface{}) interface{} {
+					return obj.(int) % 2
+				},
+			},
+			result1,
+		},
+		{
+			"2",
+			args{
+				list2,
+				func(obj interface{}) interface{} {
+					return obj.(int) % 3
+				},
+			},
+			result2,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotResult := ByCount(tt.args.grouper, tt.args.functionBy); !reflect.DeepEqual(gotResult, tt.wantResult) {
 				t.Errorf("By() = %v, want %v", gotResult, tt.wantResult)
 			}
 		})
@@ -88,20 +157,6 @@ func BenchmarkBy(b *testing.B) {
 		})
 	}
 }
-func BenchmarkBySlice(b *testing.B) {
-	list := make([]interface{}, 0)
-	for i := 0; i < n; i++ {
-		list = append(list, i)
-	}
-	b.ResetTimer()
-	b.ReportAllocs()
-
-	for i := 0; i < b.N; i++ {
-		BySlice(list, func(obj interface{}) interface{} {
-			return obj.(int) % 2
-		})
-	}
-}
 
 func BenchmarkByCount(b *testing.B) {
 	list := make(List, 0)
@@ -113,21 +168,6 @@ func BenchmarkByCount(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		ByCount(list, func(obj interface{}) interface{} {
-			return obj.(int) % 2
-		})
-	}
-}
-
-func BenchmarkBySliceCount(b *testing.B) {
-	list := make([]interface{}, 0)
-	for i := 0; i < n; i++ {
-		list = append(list, i)
-	}
-	b.ResetTimer()
-	b.ReportAllocs()
-
-	for i := 0; i < b.N; i++ {
-		BySliceCount(list, func(obj interface{}) interface{} {
 			return obj.(int) % 2
 		})
 	}
