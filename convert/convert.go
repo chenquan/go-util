@@ -16,7 +16,7 @@
  */
 
 // 数据类型转换工具
-package utils
+package convert
 
 import (
 	"reflect"

@@ -15,7 +15,7 @@
  *
  */
 
-package utils
+package convert
 
 import (
 	"testing"
