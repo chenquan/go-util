@@ -5,8 +5,10 @@ import (
 	"errors"
 	"log"
 	"sync"
+	"time"
 )
 
+// Task 任务池
 type Task struct {
 	mu   sync.RWMutex
 	jobs map[string]*Job
@@ -40,8 +42,25 @@ func (t *Task) Add(job *Job) (jobId string) {
 
 // Run 运行一个作业任务
 func (t *Task) Run(jobId string) error {
+	ctx, cancel := context.WithCancel(context.Background())
+	return t.runCtx(jobId, ctx, cancel)
 
 }
+
+// RunWithTimeout 执行作业任务,超时自动停止
+func (t *Task) RunWithTimeout(jobId string, duration time.Duration) error {
+	ctx, cancel := context.WithTimeout(context.Background(), duration)
+	return t.runCtx(jobId, ctx, cancel)
+}
+
+// RunWithDeadline 执行作业任务,超过某个时间点自动停止
+func (t *Task) RunWithDeadline(jobId string, d time.Time) error {
+	ctx, cancel := context.WithDeadline(context.Background(), d)
+	return t.runCtx(jobId, ctx, cancel)
+
+}
+
+// runCtx 执行作业任务，并指定上下文
 func (t *Task) runCtx(jobId string, ctx context.Context, cancelFunc context.CancelFunc) error {
 	t.mu.RLock()
 	defer t.mu.RUnlock()
