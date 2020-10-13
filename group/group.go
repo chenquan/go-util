@@ -17,12 +17,14 @@
 
 package group
 
+// Grouper 实现该接口进行分组
 type Grouper interface {
-	Size() int
-	Get(int) interface{}
-	IsEmpty() bool
+	Size() int           // 列表大小
+	Get(int) interface{} // 通过下标获取某一个元素
+	IsEmpty() bool       //列表是否为空
 }
 
+// By 列表分组
 func By(grouper Grouper, functionBy func(obj interface{}) interface{}) (result map[interface{}][]interface{}) {
 	result = make(map[interface{}][]interface{})
 	if grouper.IsEmpty() {
@@ -41,6 +43,7 @@ func By(grouper Grouper, functionBy func(obj interface{}) interface{}) (result m
 	return
 }
 
+// BySlice 多列表分组
 func BySlice(grouper []Grouper, functionBy func(obj interface{}) interface{}) (results []map[interface{}][]interface{}) {
 
 	if len(grouper) == 0 {
@@ -52,6 +55,7 @@ func BySlice(grouper []Grouper, functionBy func(obj interface{}) interface{}) (r
 	return
 }
 
+// BySliceCount 多列表分组统计
 func BySliceCount(grouper []Grouper, functionBy func(obj interface{}) interface{}) (results []map[interface{}]int) {
 
 	if len(grouper) == 0 {
@@ -63,6 +67,7 @@ func BySliceCount(grouper []Grouper, functionBy func(obj interface{}) interface{
 	return
 }
 
+// ByCount 列表分组统计
 func ByCount(grouper Grouper, functionBy func(obj interface{}) interface{}) (result map[interface{}]int) {
 	result = map[interface{}]int{}
 	if grouper.IsEmpty() {
