@@ -2,7 +2,6 @@ package task
 
 import (
 	"context"
-	"fmt"
 	uuid "github.com/satori/go.uuid"
 	"log"
 	"strings"
@@ -23,34 +22,48 @@ func (j JobFunc) RunJob() error {
 	return j()
 }
 
+// Job 作业任务
 type Job struct {
-	id     string // 作业ID
-	run    bool   //是否正在运行
-	ctx    context.Context
+	id     string             // 作业ID
+	run    bool               //是否正在运行
+	ctx    context.Context    // 上下文
 	cancel context.CancelFunc // 用于停止任务通道
-	job    IJobe
-	mu     sync.RWMutex
+	job    IJobe              // 任务
+	mu     sync.RWMutex       // 任务信息锁
 }
 
+// NewJob 新建一个作业
+// 列如:
+// var JobFunc1 JobFunc = func() error {
+//		fmt.Println("第一个任务，我运行了")
+//		return nil
+//	}
+// job1 := NewJob(jobFun1)
 func NewJob(job IJobe) *Job {
 	u1 := uuid.Must(uuid.NewV4(), nil)
 	uuidString := strings.ReplaceAll(u1.String(), "-", "")
 	return &Job{id: uuidString, job: job}
 }
 
+// Run 执行作业,至到调用 Stop 关闭
 func (j *Job) Run() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	return j.runCtx(ctx, cancel)
 }
+
+// RunWithTimeout 执行作业任务,超时自动停止.可调用 Stop 手动关闭.
 func (j *Job) RunWithTimeout(duration time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), duration)
 	return j.runCtx(ctx, cancel)
 }
+
+// RunWithDeadline 执行作业任务,超过某个时间点自动停止.
 func (j *Job) RunWithDeadline(d time.Time) error {
 	ctx, cancel := context.WithDeadline(context.Background(), d)
 	return j.runCtx(ctx, cancel)
 }
 
+// runCtx 执行作业任务，并指定上下文
 func (j *Job) runCtx(ctx context.Context, cancel context.CancelFunc) error {
 	j.mu.Lock()
 	defer j.mu.Unlock()
@@ -68,16 +81,16 @@ func (j *Job) runCtx(ctx context.Context, cancel context.CancelFunc) error {
 		for {
 			select {
 			case <-job.ctx.Done():
-				fmt.Println("guan")
+				log.Println("stop jobId:", j.id)
 				return
-
 			default:
-
 			}
 		}
 	}(j)
 	return err
 }
+
+// Stop 停止作业任务
 func (j *Job) Stop() {
 
 	if j.IsRun() {
@@ -85,16 +98,19 @@ func (j *Job) Stop() {
 		j.run = false
 		j.cancel()
 		j.mu.Unlock()
-		log.Println("stop jobId:", j.id)
 	}
 	log.Println("not run jobId:", j.id)
 
 }
+
+// IsRun 作业任务状态
 func (j *Job) IsRun() bool {
 	j.mu.RLock()
 	defer j.mu.RUnlock()
 	return j.run
 }
+
+// JobId 作业任务ID
 func (j *Job) JobId() string {
 	return j.id
 }
