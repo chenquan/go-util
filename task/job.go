@@ -1,20 +1,3 @@
-/*
- *    Copyright 2020 Chen Quan
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- *
- */
-
 package task
 
 import (
@@ -27,8 +10,15 @@ import (
 )
 
 // IJobe 实现此接口用于执行指定作业任务
-type IJobe interface {
+type IJob interface {
+	IRunJob
+	IStopJob
+}
+type IRunJob interface {
 	RunJob() error
+}
+type IStopJob interface {
+	StopJob()
 }
 
 // JobFunc 函数式编程实现 IJobe 接口
@@ -39,14 +29,18 @@ func (j JobFunc) RunJob() error {
 	return j()
 }
 
+// StopJob 实现 IJobe 接口，执行 JobFunc 函数
+func (j JobFunc) StopJob() {}
+
 // Job 作业任务
 type Job struct {
 	id     string             // 作业ID
 	run    bool               //是否正在运行
 	ctx    context.Context    // 上下文
 	cancel context.CancelFunc // 用于停止任务通道
-	job    IJobe              // 任务
+	job    IJob               // 任务
 	mu     sync.RWMutex       // 任务信息锁
+	once   sync.Once
 }
 
 // NewJob 新建一个作业
@@ -56,7 +50,7 @@ type Job struct {
 //		return nil
 //	}
 // job1 := NewJob(jobFun1)
-func NewJob(job IJobe) *Job {
+func NewJob(job IJob) *Job {
 	u1 := uuid.Must(uuid.NewV4(), nil)
 	uuidString := strings.ReplaceAll(u1.String(), "-", "")
 	return &Job{id: uuidString, job: job}
@@ -98,6 +92,8 @@ func (j *Job) runCtx(ctx context.Context, cancel context.CancelFunc) error {
 		for {
 			select {
 			case <-job.ctx.Done():
+				// 关闭
+				j.job.StopJob()
 				log.Println("stop jobId:", j.id)
 				return
 			default:
@@ -109,14 +105,14 @@ func (j *Job) runCtx(ctx context.Context, cancel context.CancelFunc) error {
 
 // Stop 停止作业任务
 func (j *Job) Stop() {
-
 	if j.IsRun() {
 		j.mu.Lock()
 		j.run = false
 		j.cancel()
 		j.mu.Unlock()
+	} else {
+		log.Println("not run jobId:", j.id)
 	}
-	log.Println("not run jobId:", j.id)
 
 }
 
