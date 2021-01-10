@@ -1,5 +1,5 @@
 /*
- *    Copyright 2020 Chen Quan
+ *    Copyright 2021 Chen Quan
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -15,19 +15,14 @@
  *
  */
 
-package logging
+package stack
 
-import "testing"
-
-func TestDebug(t *testing.T) {
-	Debug("日志")
-}
-
-func TestNewLog(t *testing.T) {
-	NewLogFile("logs/log.txt")
-	Debug("log out")
-}
-func TestNew(t *testing.T) {
-	New("logs/log.txt")
-	Debug("file and stdout")
+// Stacker 实现Stacker就拥有栈的功能
+type Stacker interface {
+	Len() int                   // 大小
+	IsEmpty() bool              // 是否空栈
+	Peek() (interface{}, error) // 返回栈顶
+	Pop() (interface{}, error)  // 移除并返回当前栈顶
+	Push(v interface{})         // 入栈
+	Clean()                     // 清空栈
 }
