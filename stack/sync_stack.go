@@ -38,6 +38,7 @@ type SyncStack struct {
 	stack Stacker
 }
 
+// IsEmpty 空栈
 func (stack *SyncStack) IsEmpty() bool {
 	stack.lock.RLock()
 	defer stack.lock.RUnlock()

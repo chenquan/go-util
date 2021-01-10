@@ -44,6 +44,7 @@ type (
 	}
 )
 
+// IsEmpty 空栈
 func (stack *Stack) IsEmpty() bool {
 	return stack.Len() == 0
 }
