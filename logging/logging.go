@@ -58,6 +58,11 @@ func NewLogFile(filepath string) {
 
 	newLog(f)
 }
+func New(filepath string) {
+	f, _ := file.MustOpen(filepath)
+	writer := io.MultiWriter(f, os.Stdout)
+	newLog(writer)
+}
 
 // Debug debug级日志输出
 func Debug(v ...interface{}) {
