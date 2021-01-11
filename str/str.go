@@ -21,6 +21,7 @@ import (
 	"regexp"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 )
 
 // IsEmpty 判断字符串是否为空
@@ -56,10 +57,10 @@ func IsBlank(s string) bool {
 	runes := []rune(s)
 	for _, c := range runes {
 		if !unicode.IsSpace(c) {
-			return true
+			return false
 		}
 	}
-	return false
+	return true
 }
 func IsNotBlank(s string) bool {
 	return !IsBlank(s)
@@ -120,19 +121,19 @@ func contains(s string, searchChar string) bool {
 }
 func SubstringStart(str string, start int) string {
 	if start < 0 {
-		start += len(str)
+		start += utf8.RuneCountInString(str)
 	}
 	if start < 0 {
 		start = 0
 	}
-	if start > len(str) {
+	if start > utf8.RuneCountInString(str) {
 		return str
 	} else {
 		return string([]rune(str)[start:])
 	}
 }
 func Substring(str string, start int, end int) string {
-	strLen := len(str)
+	strLen := utf8.RuneCountInString(str)
 	if strLen == 0 {
 		return ""
 	}
@@ -161,7 +162,7 @@ func Left(str string, n int) string {
 	if n < 0 {
 		return ""
 	} else {
-		if len(str) < n {
+		if utf8.RuneCountInString(str) < n {
 			return str
 		} else {
 			return string([]rune(str)[0:n])
@@ -170,10 +171,10 @@ func Left(str string, n int) string {
 
 }
 func Right(str string, n int) string {
-	if n < 0 {
+	if n <= 0 {
 		return ""
 	} else {
-		strLen := len(str)
+		strLen := utf8.RuneCountInString(str)
 		if strLen < n {
 			return str
 		} else {
