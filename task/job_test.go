@@ -19,7 +19,7 @@ func TestJob(t *testing.T) {
 	job.Stop()
 	time.Sleep(time.Second)
 	log.Println("2.运行")
-	_ = job.RunWithDeadline(time.Now().Add(time.Second * 2))
-	_ = job.RunWithTimeout(time.Second * 2)
+	_ = job.RunWithDeadline(time.Now().Add(time.Millisecond * 2))
+	_ = job.RunWithTimeout(time.Millisecond * 2)
 
 }
