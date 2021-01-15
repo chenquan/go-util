@@ -31,17 +31,22 @@ jobs:
 
       - name: Build
         run: go build -v ./...
+      - name: Test
+        run: go test -v ./...
 
+  test:
+    runs-on: ubuntu-latest
+    steps:
       - name: Run Unit tests
         run: |
           go test -race -covermode atomic -coverprofile=covprofile ./...
 
-      - name: Install goveralls
-        env:
-          GO111MODULE: off
-        run: go get github.com/mattn/goveralls
+          - name: Install goveralls
+            env:
+              GO111MODULE: off
+            run: go get github.com/mattn/goveralls
 
-      - name: Send coverage
-        env:
-          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
-        run: goveralls -coverprofile=covprofile -service=github
+          - name: Send coverage
+            env:
+              COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            run: goveralls -coverprofile=covprofile -service=github
