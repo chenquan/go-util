@@ -21,7 +21,6 @@ import (
 	"regexp"
 	"strings"
 	"unicode"
-	"unicode/utf8"
 )
 
 // IsEmpty 判断字符串是否为空
@@ -120,20 +119,24 @@ func contains(s string, searchChar string) bool {
 	return strings.Index(s, searchChar) >= 0
 }
 func SubstringStart(str string, start int) string {
+	runes := []rune(str)
+	strLen := len(runes)
 	if start < 0 {
-		start += utf8.RuneCountInString(str)
+		start += strLen
 	}
 	if start < 0 {
 		start = 0
 	}
-	if start > utf8.RuneCountInString(str) {
-		return str
+	if start > strLen {
+		return ""
 	} else {
-		return string([]rune(str)[start:])
+		return string(runes[start:])
 	}
 }
 func Substring(str string, start int, end int) string {
-	strLen := utf8.RuneCountInString(str)
+	runes := []rune(str)
+	strLen := len(runes)
+
 	if strLen == 0 {
 		return ""
 	}
@@ -155,17 +158,18 @@ func Substring(str string, start int, end int) string {
 		if end < 0 {
 			end = 0
 		}
-		return string([]rune(str)[start:end])
+		return string(runes[start:end])
 	}
 }
 func Left(str string, n int) string {
 	if n < 0 {
 		return ""
 	} else {
-		if utf8.RuneCountInString(str) < n {
+		runes := []rune(str)
+		if len(runes) < n {
 			return str
 		} else {
-			return string([]rune(str)[0:n])
+			return string(runes[0:n])
 		}
 	}
 
@@ -174,11 +178,12 @@ func Right(str string, n int) string {
 	if n <= 0 {
 		return ""
 	} else {
-		strLen := utf8.RuneCountInString(str)
+		runes := []rune(str)
+		strLen := len(runes)
 		if strLen < n {
 			return str
 		} else {
-			return string([]rune(str)[strLen-n:])
+			return string(runes[strLen-n:])
 		}
 	}
 }
