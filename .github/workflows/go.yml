@@ -6,13 +6,21 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os:
+          - centos6
+          - centos7
+          - ubuntu1604
+          - ubuntu1804
+        go: [ '1.15','1.14', '1.13' ]
     steps:
       - uses: actions/checkout@v2
 
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: [ '1.15', '1.14', '1.13' ]
+          go-version: ${{ matrix.go }}
 
       - name: Build
         run: go build -v ./...
