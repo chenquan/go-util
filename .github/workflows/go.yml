@@ -8,6 +8,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        os:
+          - centos6
+          - centos7
+          - ubuntu1604
+          - ubuntu1804
         go: [ '1.15','1.14', '1.13' ]
     steps:
       - uses: actions/checkout@v2
