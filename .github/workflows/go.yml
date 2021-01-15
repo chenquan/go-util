@@ -47,12 +47,12 @@ jobs:
         run: |
           go test -race -covermode atomic -coverprofile=covprofile ./...
 
-          - name: Install goveralls
-            env:
-              GO111MODULE: off
-            run: go get github.com/mattn/goveralls
+      - name: Install goveralls
+        env:
+          GO111MODULE: off
+        run: go get github.com/mattn/goveralls
 
-          - name: Send coverage
-            env:
-              COVERALLS_TOKEN: ${{ secrets.TOKEN }}
-            run: goveralls -coverprofile=covprofile -service=github
+      - name: Send coverage
+        env:
+          COVERALLS_TOKEN: ${{ secrets.TOKEN }}
+        run: goveralls -coverprofile=covprofile -service=github
