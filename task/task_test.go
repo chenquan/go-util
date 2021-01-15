@@ -35,10 +35,10 @@ func TestTask(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Millisecond * 5)
 	task.Stop(jobId1)
 	job2.Stop()
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Millisecond * 5)
 
 	id := job1.JobId()
 	task.Delete(id)
