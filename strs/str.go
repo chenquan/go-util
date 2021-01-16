@@ -316,6 +316,16 @@ func RegionMatches(str string, ignoreCase bool, thisStart int, substr string, st
 		str = strings.ToLower(str)
 		substr = strings.ToLower(substr)
 	}
+	// 检查参数的有效性
+	if thisStart < 0 || start < 0 || length < 0 {
+		return false
+	}
+	// 剩余部分字符串长度
+	thisRetLen := Len(str) - thisStart
+	subRetLen := Len(substr) - start
+	if thisRetLen < length || subRetLen < length {
+		return false
+	}
 	strToRunes := convert.StringToRunes(str)
 	substrToRunes := convert.StringToRunes(substr)
 	for ; length > 0; length-- {
@@ -323,11 +333,21 @@ func RegionMatches(str string, ignoreCase bool, thisStart int, substr string, st
 		c2 := substrToRunes[start]
 		thisStart++
 		start++
-
-		if c1 != c2 {
-			return false
+		if c1 == c2 {
+			continue
 		}
 
+		if ignoreCase {
+			c1 = unicode.ToUpper(c1)
+			c2 = unicode.ToUpper(c2)
+			if c1 == c2 {
+				continue
+			}
+			if unicode.ToLower(c1) == unicode.ToLower(c2) {
+				continue
+			}
+		}
+		return false
 	}
 	return true
 }
@@ -368,7 +388,7 @@ func DeleteWhitespace(str string) string {
 	if len(chars) == 0 {
 		return ""
 	}
-	return convert.RunesToString(runes)
+	return convert.RunesToString(chars)
 }
 
 func EndsWith(str, suffix string, ignoreCase bool) bool {
@@ -404,9 +424,9 @@ func equalsIgnoreCase(str1, str2 string) bool {
 	if str1 == str2 {
 		return true
 	}
-	return RegionMatches(str1, true, 0, str1, 0, Len(str1))
+	return RegionMatches(str1, true, 0, str2, 0, Len(str1))
 }
-func equals(str1, str2 string) bool {
+func Equals(str1, str2 string) bool {
 	return str1 == str2
 }
 

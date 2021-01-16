@@ -1238,3 +1238,469 @@ func TestEqualsAny(t *testing.T) {
 		})
 	}
 }
+
+func TestEquals(t *testing.T) {
+	type args struct {
+		str1 string
+		str2 string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			"1",
+			args{
+				str1: "",
+				str2: "",
+			},
+			true,
+		}, {
+			"2",
+			args{
+				str1: "1",
+				str2: "1",
+			},
+			true,
+		}, {
+			"3",
+			args{
+				str1: "我",
+				str2: "你",
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Equals(tt.args.str1, tt.args.str2); got != tt.want {
+				t.Errorf("Equals() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_equalsIgnoreCase(t *testing.T) {
+	type args struct {
+		str1 string
+		str2 string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			"1",
+			args{
+				str1: "",
+				str2: "",
+			},
+			true,
+		}, {
+			"2",
+			args{
+				str1: "a",
+				str2: "A",
+			},
+			true,
+		}, {
+			"3",
+			args{
+				str1: "abc",
+				str2: "AbC",
+			},
+			true,
+		}, {
+			"4",
+			args{
+				str1: "abca",
+				str2: "AbC",
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := equalsIgnoreCase(tt.args.str1, tt.args.str2); got != tt.want {
+				t.Errorf("equalsIgnoreCase() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEndsWithAny(t *testing.T) {
+	type args struct {
+		sequence      string
+		searchStrings []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			"1",
+			args{
+				sequence:      "1.jpg",
+				searchStrings: []string{"jpg"},
+			},
+			true,
+		}, {
+			"2",
+			args{
+				sequence:      "abcXYZ",
+				searchStrings: []string{"def", "XYZ"},
+			},
+			true,
+		}, {
+			"3",
+			args{
+				sequence:      "abcXYZ",
+				searchStrings: []string{"def", "xyz"},
+			},
+			false,
+		}, {
+			"4",
+			args{
+				sequence:      "abcXYZ",
+				searchStrings: []string{"def", "YZ"},
+			},
+			true,
+		}, {
+			"5",
+			args{
+				sequence:      "abcXYZ",
+				searchStrings: []string{""},
+			},
+			true,
+		}, {
+			"6",
+			args{
+				sequence:      "abcXYZ",
+				searchStrings: nil,
+			},
+			false,
+		}, {
+			"7",
+			args{
+				sequence:      "",
+				searchStrings: []string{"12"},
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := EndsWithAny(tt.args.sequence, tt.args.searchStrings...); got != tt.want {
+				t.Errorf("EndsWithAny() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEndsWithCase(t *testing.T) {
+	type args struct {
+		str    string
+		suffix string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			"1",
+			args{
+				str:    "1.jpg",
+				suffix: "jpg",
+			},
+			true,
+		}, {
+			"2",
+			args{
+				str:    "1.jpg",
+				suffix: "JPG",
+			},
+			false,
+		}, {
+			"3",
+			args{
+				str:    "foobar",
+				suffix: "foobar",
+			},
+			true,
+		}, {
+			"4",
+			args{
+				str:    "foobar",
+				suffix: "FOOBAR",
+			},
+			false,
+		}, {
+			"6",
+			args{
+				str:    "1.jpg",
+				suffix: "jpg1",
+			},
+			false,
+		}, {
+			"7",
+			args{
+				str:    "A",
+				suffix: "jpg",
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := EndsWithCase(tt.args.str, tt.args.suffix); got != tt.want {
+				t.Errorf("EndsWithCase() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEndsWithIgnoreCase(t *testing.T) {
+	type args struct {
+		str    string
+		suffix string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+
+		{
+			"1",
+			args{
+				str:    "1.jpg",
+				suffix: "jpg",
+			},
+			true,
+		}, {
+			"2",
+			args{
+				str:    "1.jpg",
+				suffix: "JPG",
+			},
+			true,
+		}, {
+			"3",
+			args{
+				str:    "foobar",
+				suffix: "foobar",
+			},
+			true,
+		}, {
+			"4",
+			args{
+				str:    "foobar",
+				suffix: "FOOBAR",
+			},
+			true,
+		}, {
+			"6",
+			args{
+				str:    "1.jpg",
+				suffix: "jpg1",
+			},
+			false,
+		}, {
+			"7",
+			args{
+				str:    "A",
+				suffix: "jpg",
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := EndsWithIgnoreCase(tt.args.str, tt.args.suffix); got != tt.want {
+				t.Errorf("EndsWithIgnoreCase() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDeleteWhitespace(t *testing.T) {
+	type args struct {
+		str string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"1",
+			args{str: "   "},
+			"",
+		}, {
+			"2",
+			args{str: ""},
+			"",
+		}, {
+			"3",
+			args{str: "1 2 3"},
+			"123",
+		}, {
+			"4",
+			args{str: "1 \n 2 3"},
+			"123",
+		}, {
+			"4",
+			args{str: "\v 1 \n 2 3 \t"},
+			"123",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := DeleteWhitespace(tt.args.str); got != tt.want {
+				t.Errorf("DeleteWhitespace() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_defaultIfEmpty(t *testing.T) {
+	type args struct {
+		str        string
+		defaultStr string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"1",
+			args{
+				str:        "1",
+				defaultStr: "2",
+			},
+			"1",
+		}, {
+			"2",
+			args{
+				str:        "1",
+				defaultStr: "4",
+			},
+			"1",
+		}, {
+			"3",
+			args{
+				str:        "",
+				defaultStr: "4",
+			},
+			"4",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := defaultIfEmpty(tt.args.str, tt.args.defaultStr); got != tt.want {
+				t.Errorf("defaultIfEmpty() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_defaultIfBlank(t *testing.T) {
+	type args struct {
+		str        string
+		defaultStr string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"1",
+			args{
+				str:        "1",
+				defaultStr: "2",
+			},
+			"1",
+		}, {
+			"2",
+			args{
+				str:        "1",
+				defaultStr: "4",
+			},
+			"1",
+		}, {
+			"3",
+			args{
+				str:        "",
+				defaultStr: "4",
+			},
+			"4",
+		}, {
+			"4",
+			args{
+				str:        "\n",
+				defaultStr: "4",
+			},
+			"4",
+		}, {
+			"4",
+			args{
+				str:        "\t\n",
+				defaultStr: "4",
+			},
+			"4",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := defaultIfBlank(tt.args.str, tt.args.defaultStr); got != tt.want {
+				t.Errorf("defaultIfBlank() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestLen(t *testing.T) {
+	type args struct {
+		str string
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			"1",
+			args{str: "1"},
+			1,
+		}, {
+			"2",
+			args{str: "123"},
+			3,
+		}, {
+			"3",
+			args{str: "abc"},
+			3,
+		}, {
+			"4",
+			args{str: "你好!"},
+			3,
+		}, {
+			"4",
+			args{str: "你好啊"},
+			3,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Len(tt.args.str); got != tt.want {
+				t.Errorf("Len() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
