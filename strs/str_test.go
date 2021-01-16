@@ -1076,3 +1076,165 @@ func BenchmarkLen(b *testing.B) {
 	}
 	fmt.Println(utf8.RuneLen('a'))
 }
+
+func TestAbbreviate(t *testing.T) {
+	type args struct {
+		str          string
+		abbrevMarker string
+		offset       int
+		maxWidth     int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			"1",
+			args{
+				str:          "much too long text",
+				abbrevMarker: "",
+				offset:       0,
+				maxWidth:     13,
+			},
+			"much too long",
+			false,
+		}, {
+			"2",
+			args{
+				str:          "",
+				abbrevMarker: "",
+				offset:       0,
+				maxWidth:     13,
+			},
+			"",
+			false,
+		}, {
+			"3",
+			args{
+				str:          "short",
+				abbrevMarker: "...",
+				offset:       0,
+				maxWidth:     10,
+			},
+			"short",
+			false,
+		}, {
+			"4",
+			args{
+				str:          "Now is the time for all good men to come to the aid of their party.",
+				abbrevMarker: "...",
+				offset:       0,
+				maxWidth:     10,
+			},
+			"Now is ...",
+			false,
+		}, {
+			"5",
+			args{
+				str:          "raspberry peach",
+				abbrevMarker: "...",
+				offset:       0,
+				maxWidth:     14,
+			},
+			"raspberry p...",
+			false,
+		}, {
+			"6",
+			args{
+				str:          "abc",
+				abbrevMarker: "...",
+				offset:       0,
+				maxWidth:     3,
+			},
+			"",
+			true,
+		}, {
+			"7",
+			args{
+				str:          "abcdefg",
+				abbrevMarker: "...",
+				offset:       0,
+				maxWidth:     4,
+			},
+			"a...",
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := Abbreviate(tt.args.str, tt.args.abbrevMarker, tt.args.offset, tt.args.maxWidth)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Abbreviate() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("Abbreviate() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestBytes(t *testing.T) {
+	type args struct {
+		s string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []byte
+	}{
+		{
+			"1",
+			args{s: "123"},
+			[]byte("123"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Bytes(tt.args.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Bytes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEqualsAny(t *testing.T) {
+	type args struct {
+		str1          string
+		searchStrings []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"1",
+			args{
+				str1:          "2",
+				searchStrings: []string{"1", "2"},
+			},
+			true,
+		}, {"2",
+			args{
+				str1:          "a",
+				searchStrings: []string{"1", "a"},
+			},
+			true,
+		}, {"3",
+			args{
+				str1:          "a",
+				searchStrings: []string{"1"},
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := EqualsAny(tt.args.str1, tt.args.searchStrings...); got != tt.want {
+				t.Errorf("EqualsAny() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

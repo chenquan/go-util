@@ -18,12 +18,17 @@
 package str
 
 import (
+	"fmt"
 	"github.com/chenquan/go-utils/convert"
 	"github.com/chenquan/go-utils/math"
 	"regexp"
 	"strings"
 	"unicode"
 	"unicode/utf8"
+)
+
+const (
+	empty = "" // 空字符串
 )
 
 // IsEmpty 判断字符串是否为空
@@ -417,4 +422,45 @@ func EqualsAny(str1 string, searchStrings ...string) bool {
 }
 func Bytes(s string) []byte {
 	return []byte(s)
+}
+
+// Abbreviate
+func Abbreviate(str, abbrevMarker string, offset, maxWidth int) (string, error) {
+	if IsNotEmpty(str) && abbrevMarker == empty && maxWidth > 0 {
+		return Substring(str, 0, maxWidth), nil
+	} else if IsAnyEmpty(str, abbrevMarker) {
+		// 其中有一个字符串为,则直接返回原字符串
+		return str, nil
+	}
+	abbrevMarkerLen := Len(abbrevMarker)
+	// 最小缩减宽度
+	minAbbrevWidth := abbrevMarkerLen + 1
+	if maxWidth < minAbbrevWidth {
+		return empty, fmt.Errorf("minimum abbreviation width is %d", minAbbrevWidth)
+	}
+	minAbbrevWidthOffset := 2*abbrevMarkerLen + 1
+	strLen := Len(str)
+	if strLen <= maxWidth {
+		return str, nil
+	}
+	if offset > strLen {
+		offset = strLen
+	}
+	if strLen-offset < maxWidth-abbrevMarkerLen {
+		offset = strLen - (maxWidth - abbrevMarkerLen)
+	}
+	if offset <= abbrevMarkerLen+1 {
+		return Substring(str, 0, maxWidth-abbrevMarkerLen) + abbrevMarker, nil
+	}
+	if maxWidth < minAbbrevWidthOffset {
+		return empty, fmt.Errorf("minimum abbreviation width with offset is %d", minAbbrevWidthOffset)
+	}
+	if offset+maxWidth-abbrevMarkerLen < strLen {
+		substr, err := Abbreviate(Substring(str, 0, offset), abbrevMarker, 0, maxWidth-abbrevMarkerLen)
+		if err == nil {
+			return abbrevMarker + substr, nil
+		}
+		return empty, err
+	}
+	return abbrevMarker + Substring(str, 0, strLen-(maxWidth-abbrevMarkerLen)), nil
 }
