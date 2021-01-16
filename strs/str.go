@@ -225,8 +225,8 @@ func IndexOfDifference(strings ...string) int {
 		} else {
 			firstDiff = -1
 
+			runes := convert.StringToRunes(strings[0])
 			for stringPos := 0; stringPos < shortestStrLen; stringPos++ {
-				runes := convert.StringToRunes(strings[0])
 				comparisonChar := runes[stringPos]
 				for arrayPos := 1; arrayPos < stringsLen; arrayPos++ {
 					if convert.StringToRunes(strings[arrayPos])[stringPos] != comparisonChar {

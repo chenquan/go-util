@@ -1025,7 +1025,7 @@ func TestIndexOfDifference(t *testing.T) {
 		}, {
 			"4",
 			args{strings: []string{"1", "1"}},
-			0,
+			-1,
 		}, {
 			"5",
 			args{strings: []string{"123", "123"}},
