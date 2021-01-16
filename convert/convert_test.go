@@ -18,6 +18,7 @@
 package convert
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -77,5 +78,54 @@ func BenchmarkToBytes(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		ToBytes(tmp)
+	}
+}
+
+func TestStringToRunes(t *testing.T) {
+	type args struct {
+		str string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []rune
+	}{
+		{
+			"1",
+			args{"1111"},
+			[]rune("1111"),
+		}, {
+			"2",
+			args{""},
+			[]rune(""),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := StringToRunes(tt.args.str); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("StringToRunes() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestRunesToString(t *testing.T) {
+	type args struct {
+		runes []rune
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"1", args{runes: []rune("111")}, "111"},
+		{"2", args{runes: nil}, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := RunesToString(tt.args.runes); got != tt.want {
+				t.Errorf("RunesToString() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
