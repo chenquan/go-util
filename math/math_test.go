@@ -35,6 +35,12 @@ func TestMaxInt(t *testing.T) {
 				b: 2,
 			},
 			2,
+		}, {"2",
+			args{
+				a: 2,
+				b: 1,
+			},
+			2,
 		},
 	}
 	for _, tt := range tests {
@@ -61,6 +67,13 @@ func TestMaxInt64(t *testing.T) {
 			args{
 				a: 1,
 				b: 2,
+			},
+			2,
+		}, {
+			"2",
+			args{
+				a: 2,
+				b: 1,
 			},
 			2,
 		},
@@ -91,6 +104,13 @@ func TestMinInt(t *testing.T) {
 				b: 2,
 			},
 			1,
+		}, {
+			"2",
+			args{
+				a: 2,
+				b: 1,
+			},
+			1,
 		},
 	}
 	for _, tt := range tests {
@@ -117,6 +137,13 @@ func TestMinInt64(t *testing.T) {
 			args{
 				a: 1,
 				b: 2,
+			},
+			1,
+		}, {
+			"2",
+			args{
+				a: 2,
+				b: 1,
 			},
 			1,
 		},
