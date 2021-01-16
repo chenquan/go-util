@@ -94,6 +94,10 @@ func TestStringToRunes(t *testing.T) {
 			"1",
 			args{"1111"},
 			[]rune("1111"),
+		}, {
+			"2",
+			args{""},
+			[]rune(""),
 		},
 	}
 	for _, tt := range tests {
@@ -115,6 +119,7 @@ func TestRunesToString(t *testing.T) {
 		want string
 	}{
 		{"1", args{runes: []rune("111")}, "111"},
+		{"2", args{runes: []rune{}}, ""},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

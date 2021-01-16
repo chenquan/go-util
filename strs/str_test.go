@@ -1704,3 +1704,208 @@ func TestLen(t *testing.T) {
 		})
 	}
 }
+
+func TestDifference(t *testing.T) {
+	type args struct {
+		a string
+		b string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{"1",
+			args{
+				a: "1",
+				b: "1",
+			},
+			"",
+		}, {"2",
+			args{
+				a: "111",
+				b: "1",
+			},
+			"",
+		}, {"3",
+			args{
+				a: "123",
+				b: "1",
+			},
+			"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Difference(tt.args.a, tt.args.b); got != tt.want {
+				t.Errorf("Difference() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestContainsIgnoreCase(t *testing.T) {
+	type args struct {
+		str       string
+		searchStr string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{"1",
+			args{
+				str:       "a",
+				searchStr: "A",
+			},
+			true,
+		}, {"2",
+			args{
+				str:       "a",
+				searchStr: "Abc",
+			},
+			false,
+		}, {"3",
+			args{
+				str:       "abc",
+				searchStr: "A",
+			},
+			true,
+		}, {"4",
+			args{
+				str:       "xabcz",
+				searchStr: "abc",
+			},
+			true,
+		}, {"5",
+			args{
+				str:       "",
+				searchStr: "abc",
+			},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := ContainsIgnoreCase(tt.args.str, tt.args.searchStr); got != tt.want {
+				t.Errorf("ContainsIgnoreCase() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIndexAny(t *testing.T) {
+	type args struct {
+		s     string
+		chars string
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{"1",
+			args{
+				s:     "123",
+				chars: "1",
+			},
+			0,
+		},
+		{"2",
+			args{
+				s:     "123",
+				chars: "01",
+			},
+			0,
+		}, {"3",
+			args{
+				s:     "123",
+				chars: "0",
+			},
+			-1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IndexAny(tt.args.s, tt.args.chars); got != tt.want {
+				t.Errorf("IndexAny() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIndex(t *testing.T) {
+	type args struct {
+		s      string
+		substr string
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			"1",
+			args{
+				s:      "123",
+				substr: "2",
+			},
+			1,
+		}, {
+			"2",
+			args{
+				s:      "123",
+				substr: "0",
+			},
+			-1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Index(tt.args.s, tt.args.substr); got != tt.want {
+				t.Errorf("Index() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestCommonPrefix(t *testing.T) {
+	type args struct {
+		strings []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"1",
+			args{strings: []string{"11", "123"}},
+			"1",
+		}, {
+			"2",
+			args{strings: []string{"common-llll", "common12121"}},
+			"common",
+		}, {
+			"3",
+			args{strings: []string{"common", "common12121", "com"}},
+			"com",
+		}, {
+			"4",
+			args{strings: []string{"com", "com", "com"}},
+			"com",
+		}, {
+			"5",
+			args{strings: nil},
+			"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := CommonPrefix(tt.args.strings...); got != tt.want {
+				t.Errorf("CommonPrefix() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

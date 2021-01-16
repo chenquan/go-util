@@ -28,7 +28,8 @@ import (
 )
 
 const (
-	empty = "" // 空字符串
+	empty         = "" // 空字符串
+	indexNotFound = -1
 )
 
 // IsEmpty 判断字符串是否为空
@@ -136,7 +137,7 @@ func SubstringStart(str string, start int) string {
 		start = 0
 	}
 	if start > strLen {
-		return ""
+		return empty
 	} else {
 		return string(runes[start:])
 	}
@@ -146,7 +147,7 @@ func Substring(str string, start int, end int) string {
 	strLen := len(runes)
 
 	if strLen == 0 {
-		return ""
+		return empty
 	}
 	if end < 0 {
 		end += strLen
@@ -158,7 +159,7 @@ func Substring(str string, start int, end int) string {
 		end = strLen
 	}
 	if start > end {
-		return ""
+		return empty
 	} else {
 		if start < 0 {
 			start = 0
@@ -171,7 +172,7 @@ func Substring(str string, start int, end int) string {
 }
 func Left(str string, n int) string {
 	if n < 0 {
-		return ""
+		return empty
 	} else {
 		runes := []rune(str)
 		if len(runes) < n {
@@ -184,7 +185,7 @@ func Left(str string, n int) string {
 }
 func Right(str string, n int) string {
 	if n <= 0 {
-		return ""
+		return empty
 	} else {
 		runes := []rune(str)
 		strLen := len(runes)
@@ -224,7 +225,7 @@ func IndexOfDifference(strings ...string) int {
 			longestStrLen = math.MaxInt(len(runes), longestStrLen)
 		}
 		if allStringsNull || longestStrLen == 0 {
-			return -1
+			return indexNotFound
 		} else if shortestStrLen == 0 {
 			return 0
 		} else {
@@ -251,22 +252,22 @@ func IndexOfDifference(strings ...string) int {
 		}
 
 	} else {
-		return -1
+		return indexNotFound
 	}
 }
 func IndexOfDifferenceWithTwoStr(a, b string) int {
 	if a == b {
-		return -1
+		return indexNotFound
 	} else {
 		aRunes := convert.StringToRunes(a)
 		bRunes := convert.StringToRunes(b)
 		aLen := len(aRunes)
-		bLen := len(aRunes)
+		bLen := len(bRunes)
 		i := 0
 		for ; i < aLen && i < bLen && aRunes[i] == bRunes[i]; i++ {
 		}
-		if i >= aLen && i > -bLen {
-			return -1
+		if i >= aLen && i >= bLen {
+			return indexNotFound
 		} else {
 			return i
 		}
@@ -277,7 +278,7 @@ func IndexOfDifferenceWithTwoStr(a, b string) int {
 func Difference(a, b string) string {
 	i := IndexOfDifferenceWithTwoStr(a, b)
 	if i == -1 {
-		return ""
+		return empty
 	} else {
 		runes := convert.StringToRunes(b)
 		return convert.RunesToString(runes[i:])
@@ -288,10 +289,10 @@ func CommonPrefix(strings ...string) string {
 	if len(strings) != 0 {
 		smallestIndexOfDiff := IndexOfDifference(strings...)
 		if smallestIndexOfDiff == -1 {
-			return ""
+			return strings[0]
 		} else {
 			if smallestIndexOfDiff == 0 {
-				return ""
+				return empty
 			} else {
 				runes := convert.StringToRunes(strings[0])
 				return convert.RunesToString(runes[0:smallestIndexOfDiff])
@@ -299,7 +300,7 @@ func CommonPrefix(strings ...string) string {
 		}
 
 	} else {
-		return ""
+		return empty
 	}
 }
 func Index(s, substr string) int {
@@ -309,6 +310,13 @@ func IndexAny(s, chars string) int {
 	return strings.IndexAny(s, chars)
 }
 func ContainsIgnoreCase(str, searchStr string) bool {
+	length := Len(searchStr)
+	max := Len(str) - length
+	for i := 0; i <= max; i++ {
+		if RegionMatches(str, true, i, searchStr, 0, length) {
+			return true
+		}
+	}
 	return false
 }
 func RegionMatches(str string, ignoreCase bool, thisStart int, substr string, start int, length int) bool {
@@ -386,7 +394,7 @@ func DeleteWhitespace(str string) string {
 		return str
 	}
 	if len(chars) == 0 {
-		return ""
+		return empty
 	}
 	return convert.RunesToString(chars)
 }
