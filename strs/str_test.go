@@ -18,8 +18,11 @@
 package str
 
 import (
+	"fmt"
 	"reflect"
+	"strings"
 	"testing"
+	"unicode/utf8"
 )
 
 func TestIsNumerical(t *testing.T) {
@@ -990,9 +993,86 @@ func Test_contains(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := contains(tt.args.s, tt.args.searchChar); got != tt.want {
-				t.Errorf("contains() = %v, want %v", got, tt.want)
+			if got := Contains(tt.args.s, tt.args.searchChar); got != tt.want {
+				t.Errorf("Contains() = %v, want %v", got, tt.want)
 			}
 		})
 	}
+}
+
+func TestIndexOfDifference(t *testing.T) {
+	type args struct {
+		strings []string
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			"1",
+			args{strings: []string{}},
+			-1,
+		},
+		{
+			"2",
+			args{strings: []string{""}},
+			-1,
+		}, {
+			"3",
+			args{strings: nil},
+			-1,
+		}, {
+			"4",
+			args{strings: []string{"1", "1"}},
+			0,
+		}, {
+			"5",
+			args{strings: []string{"123", "123"}},
+			-1,
+		}, {
+			"6",
+			args{strings: []string{"12121212123", "23"}},
+			0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := IndexOfDifference(tt.args.strings...); got != tt.want {
+				t.Errorf("IndexOfDifference() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func genStrs() []string {
+	alphabet := "abc"
+	chinese := "你好!"
+	strset := make([]string, 0, 50)
+	builder := strings.Builder{}
+	for i := 0; i < 50; i++ {
+		for j := 0; i < i; j++ {
+			if i%2 == 0 {
+				builder.WriteString(alphabet)
+			} else {
+				builder.WriteString(chinese)
+			}
+
+		}
+		strset = append(strset, builder.String())
+		builder.Reset()
+
+	}
+	return strset
+}
+func BenchmarkLen(b *testing.B) {
+	strset := genStrs()
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		for _, str := range strset {
+			Len(str)
+		}
+	}
+	fmt.Println(utf8.RuneLen('a'))
 }

@@ -48,3 +48,16 @@ func BinaryToBools(b *[]byte) []bool {
 func BoolsToBinary(v *[]bool) []byte {
 	return *(*[]byte)(unsafe.Pointer(v))
 }
+
+// StringToRunes
+func StringToRunes(str string) []rune {
+	return []rune(str)
+}
+
+//
+func RunesToString(runes []rune) string {
+	if len(runes) == 0 {
+		return ""
+	}
+	return string(runes)
+}
