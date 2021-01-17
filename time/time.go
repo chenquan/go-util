@@ -101,9 +101,7 @@ func ToDateTimeFormat(t *time.Time) string {
 }
 
 // ToDateTimeFormatInLocal 时间转长日期字符串
-//
 // t 时间
-//
 // location 区域
 func ToDateTimeFormatInLocal(t *time.Time, location *time.Location) string {
 	return t.In(location).Format(DateTimeFormat)
@@ -115,10 +113,7 @@ func NowDateTimeFormat() string {
 }
 
 // NowDateTimeFormatInLocal 当前时间长日期字符串
-//
 // location 区域
 func NowDateTimeFormatInLocal(location *time.Location) string {
 	return time.Now().In(location).Format(DateTimeFormat)
-}
-func Parse(t time.Time, patten string) {
 }
