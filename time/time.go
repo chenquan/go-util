@@ -49,6 +49,17 @@ func MonthInLocal(location *time.Location) time.Month {
 	return time.Now().In(location).Month()
 }
 
+// Weekday 当前周工作日
+func Weekday() time.Weekday {
+	return time.Now().Weekday()
+}
+
+// WeekdayInLocal 当前周工作日
+// location 区域信息
+func WeekdayInLocal(location *time.Location) time.Weekday {
+	return time.Now().In(location).Weekday()
+}
+
 // Day 当前天
 func Day() int {
 	return time.Now().Day()

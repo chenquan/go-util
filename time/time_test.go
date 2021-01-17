@@ -438,3 +438,50 @@ func TestToDateTimeFormat(t *testing.T) {
 		})
 	}
 }
+
+func TestWeekday(t *testing.T) {
+	tests := []struct {
+		name string
+		want time.Weekday
+	}{
+		{
+			"1",
+			time.Now().Weekday(),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Weekday(); got != tt.want {
+				t.Errorf("Weekday() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestWeekdayInLocal(t *testing.T) {
+	type args struct {
+		location *time.Location
+	}
+	tests := []struct {
+		name string
+		args args
+		want time.Weekday
+	}{
+		{
+			"1",
+			args{time.Local},
+			time.Now().In(time.Local).Weekday(),
+		}, {
+			"2",
+			args{time.UTC},
+			time.Now().In(time.UTC).Weekday(),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := WeekdayInLocal(tt.args.location); got != tt.want {
+				t.Errorf("WeekdayInLocal() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
