@@ -128,3 +128,39 @@ func NowDateTimeFormat() string {
 func NowDateTimeFormatInLocal(location *time.Location) string {
 	return time.Now().In(location).Format(DateTimeFormat)
 }
+
+// ParseDateTimeFormat 解析长日期字符串
+func ParseDateTimeFormat(timeFormat string) (*time.Time, error) {
+	if t, err := time.Parse(DateTimeFormat, timeFormat); err != nil {
+		return nil, err
+	} else {
+		return &t, err
+	}
+}
+
+// ParseDateTimeFormat 解析长日期字符串
+func ParseDateTimeFormatInLocal(timeFormat string, location *time.Location) (*time.Time, error) {
+	if t, err := time.ParseInLocation(DateTimeFormat, timeFormat, location); err != nil {
+		return nil, err
+	} else {
+		return &t, err
+	}
+}
+
+// ParseDateTimeFormat 解析日期字符串
+func ParseDateFormat(timeFormat string) (*time.Time, error) {
+	if t, err := time.Parse(DateFormat, timeFormat); err != nil {
+		return nil, err
+	} else {
+		return &t, err
+	}
+}
+
+// ParseDateTimeFormat 解析日期字符串
+func ParseDateFormatInLocal(timeFormat string, location *time.Location) (*time.Time, error) {
+	if t, err := time.ParseInLocation(DateFormat, timeFormat, location); err != nil {
+		return nil, err
+	} else {
+		return &t, err
+	}
+}

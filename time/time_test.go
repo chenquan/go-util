@@ -18,6 +18,7 @@
 package time
 
 import (
+	"reflect"
 	"testing"
 	"time"
 )
@@ -481,6 +482,200 @@ func TestWeekdayInLocal(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := WeekdayInLocal(tt.args.location); got != tt.want {
 				t.Errorf("WeekdayInLocal() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestParseDateTimeFormat(t *testing.T) {
+	type args struct {
+		timeFormat string
+	}
+	date1 := time.Date(2021, 1, 17, 16, 0, 0, 0, time.UTC)
+	date2 := time.Date(2021, 1, 17, 17, 12, 0, 0, time.UTC)
+	tests := []struct {
+		name    string
+		args    args
+		want    *time.Time
+		wantErr bool
+	}{
+		{
+			"1",
+			args{timeFormat: "2021-01-17 16:00:00"},
+			&date1,
+			false,
+		}, {
+			"2",
+			args{timeFormat: "2021-01-17 17:12:00"},
+			&date2,
+			false,
+		}, {
+			"3",
+			args{timeFormat: "2021-01-17 17:12:001"},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ParseDateTimeFormat(tt.args.timeFormat)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParseDateTimeFormat() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ParseDateTimeFormat() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestParseDateTimeFormatInLocal(t *testing.T) {
+	type args struct {
+		timeFormat string
+		location   *time.Location
+	}
+	date1 := time.Date(2021, 1, 17, 16, 0, 0, 0, time.Local)
+	date2 := time.Date(2021, 1, 17, 17, 12, 0, 0, time.UTC)
+	tests := []struct {
+		name    string
+		args    args
+		want    *time.Time
+		wantErr bool
+	}{
+		{
+			"1",
+			args{
+				timeFormat: "2021-01-17 16:00:00",
+				location:   time.Local,
+			},
+			&date1,
+			false,
+		}, {
+			"2",
+			args{
+				timeFormat: "2021-01-17 17:12:00",
+				location:   time.UTC,
+			},
+			&date2,
+			false,
+		}, {
+			"3",
+			args{
+				timeFormat: "2021-01-17 17:12:001",
+				location:   time.UTC,
+			},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ParseDateTimeFormatInLocal(tt.args.timeFormat, tt.args.location)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParseDateTimeFormatInLocal() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ParseDateTimeFormatInLocal() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestParseDateFormat(t *testing.T) {
+	type args struct {
+		timeFormat string
+	}
+	date1 := time.Date(2021, 1, 17, 0, 0, 0, 0, time.UTC)
+	date2 := time.Date(2021, 1, 17, 0, 0, 0, 0, time.UTC)
+	tests := []struct {
+		name    string
+		args    args
+		want    *time.Time
+		wantErr bool
+	}{
+		{
+			"1",
+			args{timeFormat: "2021-01-17"},
+			&date1,
+			false,
+		}, {
+			"2",
+			args{timeFormat: "2021-01-17"},
+			&date2,
+			false,
+		}, {
+			"3",
+			args{timeFormat: "2021-01-17 17:12:00"},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ParseDateFormat(tt.args.timeFormat)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParseDateFormat() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ParseDateFormat() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestParseDateFormatInLocal(t *testing.T) {
+	type args struct {
+		timeFormat string
+		location   *time.Location
+	}
+
+	date1 := time.Date(2021, 1, 17, 0, 0, 0, 0, time.Local)
+	date2 := time.Date(2021, 1, 18, 0, 0, 0, 0, time.UTC)
+	tests := []struct {
+		name    string
+		args    args
+		want    *time.Time
+		wantErr bool
+	}{
+		{
+			"1",
+			args{
+				timeFormat: "2021-01-17",
+				location:   time.Local,
+			},
+			&date1,
+			false,
+		}, {
+			"2",
+			args{
+				timeFormat: "2021-01-18",
+				location:   time.UTC,
+			},
+			&date2,
+			false,
+		},
+		{
+			"3",
+			args{
+				timeFormat: "2021-01-181",
+				location:   time.UTC,
+			},
+			nil,
+			true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := ParseDateFormatInLocal(tt.args.timeFormat, tt.args.location)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParseDateFormatInLocal() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ParseDateFormatInLocal() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
