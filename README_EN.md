@@ -9,18 +9,18 @@
 [![GitHub issues](https://img.shields.io/github/issues/chenquan/go-utils)](https://github.com/chenquan/go-utils/issues)
 [![GitHub closed issues](https://img.shields.io/github/issues-closed/chenquan/go-utils?color=red)](https://github.com/chenquan/go-utils/issues?q=is%3Aissue+is%3Aclosed)
 
-> 一个go工具包
+> A go toolkit
 
-**中文 | [English](README_EN.md)**
+**[中文](README.md) | English**
 
-## 安装
+## Installation
 
-安装`go-utils`
+Install `go-utils`
 
 ```shell
 go get github.com/chenquan/go-utils
 ```
 
-## 许可证
+## License
 
 [Apache-2.0 License](https://github.com/chenquan/go-utils/blob/master/LICENSE)
