@@ -16,7 +16,7 @@
 Install `go-utils`
 
 ```shell
-go get gitlab.com/chenquan/go-utils
+go get github.com/chenquan/go-utils
 ```
 
 ## License
