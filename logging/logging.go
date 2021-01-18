@@ -46,18 +46,24 @@ var (
 	levelFlags         = []string{"DEBUG", "INFO", "WARN", "ERROR", "FATAL"}
 )
 
+// newLog 新建日志
 func newLog(out io.Writer) {
 	logger = log.New(out, "", log.LstdFlags)
 }
+
+// NewLog 新建标准日志
 func NewLog() {
 	newLog(os.Stdout)
 }
 
+// NewLogFile 新建文件日志
 func NewLogFile(filepath string) {
 	f, _ := file.MustOpen(filepath)
 
 	newLog(f)
 }
+
+// New 新建文件日志和标准日志
 func New(filepath string) {
 	f, _ := file.MustOpen(filepath)
 	writer := io.MultiWriter(f, os.Stdout)

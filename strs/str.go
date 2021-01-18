@@ -60,7 +60,7 @@ func IsNoneEmpty(strings ...string) bool {
 	return !IsAnyEmpty(strings...)
 }
 
-// IsBlank 断某字符串是否为空或长度为0或由空白符(whitespace) 构成
+// IsBlank 判断字符串为空或长度为0或由空白符(whitespace) 构成
 func IsBlank(s string) bool {
 	runes := []rune(s)
 	for _, c := range runes {
@@ -70,10 +70,13 @@ func IsBlank(s string) bool {
 	}
 	return true
 }
+
+//IsNotBlank 判断字符串不为空或长度为0或由空白符(whitespace) 构成
 func IsNotBlank(s string) bool {
 	return !IsBlank(s)
 }
 
+// IsAnyBlank 判断字符串切片存在为空或长度为0或由空白符(whitespace) 构成的元素
 func IsAnyBlank(strings ...string) bool {
 	if len(strings) == 0 {
 		return true
@@ -88,13 +91,17 @@ func IsAnyBlank(strings ...string) bool {
 
 }
 
+// IsNoneBlank 判断字符串切片不存在为空或长度为0或由空白符(whitespace) 构成的元素
 func IsNoneBlank(strings ...string) bool {
 	return !IsAnyBlank(strings...)
 }
 
+// Trim 返回字符串s的一部分，并删除了Unicode定义的所有首尾空格
 func Trim(s string) string {
 	return strings.TrimSpace(s)
 }
+
+//
 func Strip(s string, stripChars string) string {
 	if IsEmpty(s) {
 		return s

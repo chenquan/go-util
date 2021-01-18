@@ -14,10 +14,12 @@ type Task struct {
 	jobs map[string]*Job
 }
 
-// 新建一个作业任务池
+// NewTask 新建一个作业任务池
 func NewTask() *Task {
 	return &Task{jobs: make(map[string]*Job)}
 }
+
+// Get 获取作业任务
 func (t *Task) Get(jobId string) *Job {
 	t.mu.RLock()
 	defer t.mu.RUnlock()

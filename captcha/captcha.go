@@ -73,6 +73,7 @@ type Point struct {
 	Y int
 }
 
+// Image 图片
 type Image struct {
 	image   *image.NRGBA
 	width   int
@@ -80,7 +81,7 @@ type Image struct {
 	Complex int
 }
 
-//新建一个图片对象
+// NewCaptchaImage 新建一个图片对象
 func NewCaptchaImage(width int, height int, bgColor color.RGBA) (*Image, error) {
 
 	m := image.NewNRGBA(image.Rect(0, 0, width, height))
@@ -94,7 +95,7 @@ func NewCaptchaImage(width int, height int, bgColor color.RGBA) (*Image, error) 
 	}, nil
 }
 
-//保存图片对象
+//SaveImage 保存图片对象
 func (captcha *Image) SaveImage(w io.Writer, imageFormat ImageFormat) error {
 	switch imageFormat {
 	case ImageFormatPng:
@@ -108,7 +109,7 @@ func (captcha *Image) SaveImage(w io.Writer, imageFormat ImageFormat) error {
 	}
 }
 
-//添加一个较粗的空白线
+// DrawHollowLine 添加一个较粗的空白线
 func (captcha *Image) DrawHollowLine() *Image {
 
 	first := captcha.width / 20
@@ -144,7 +145,7 @@ func (captcha *Image) DrawHollowLine() *Image {
 	return captcha
 }
 
-//添加一个较粗的正弦线
+// DrawSineLine 添加一个较粗的正弦线
 func (captcha *Image) DrawSineLine() *Image {
 	x := 0
 	var y float64 = 0
@@ -187,7 +188,7 @@ func (captcha *Image) DrawSineLine() *Image {
 	return captcha
 }
 
-//DrawLine 画直线
+// DrawLine 画直线
 func (captcha *Image) DrawLine(num int) *Image {
 
 	first := captcha.width / 10
@@ -214,6 +215,7 @@ func (captcha *Image) DrawLine(num int) *Image {
 	return captcha
 }
 
+// drawBeeline 画直线
 func (captcha *Image) drawBeeline(point1 Point, point2 Point, lineColor color.RGBA) {
 	dx := math.Abs(float64(point1.X - point2.X))
 
@@ -247,7 +249,7 @@ func (captcha *Image) drawBeeline(point1 Point, point2 Point, lineColor color.RG
 	}
 }
 
-//画边框.
+// DrawBorder 画边框
 func (captcha *Image) DrawBorder(borderColor color.RGBA) *Image {
 	for x := 0; x < captcha.width; x++ {
 		captcha.image.Set(x, 0, borderColor)
@@ -260,7 +262,7 @@ func (captcha *Image) DrawBorder(borderColor color.RGBA) *Image {
 	return captcha
 }
 
-//画噪点.
+//DrawNoise 画噪点
 func (captcha *Image) DrawNoise(complex Complex) *Image {
 	density := 18
 	if complex == ComplexLower {
@@ -286,7 +288,7 @@ func (captcha *Image) DrawNoise(complex Complex) *Image {
 	return captcha
 }
 
-//画文字噪点.
+//DrawTextNoise 画文字噪点
 func (captcha *Image) DrawTextNoise(complex Complex) error {
 	density := 1500
 	if complex == ComplexLower {
@@ -337,7 +339,7 @@ func (captcha *Image) DrawTextNoise(complex Complex) error {
 	return nil
 }
 
-//写字.
+//DrawText 写字
 func (captcha *Image) DrawText(text string) error {
 	c := freetype.NewContext()
 	c.SetDPI(*dpi)

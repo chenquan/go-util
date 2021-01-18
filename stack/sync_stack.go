@@ -45,6 +45,7 @@ func (stack *SyncStack) IsEmpty() bool {
 	return stack.stack.IsEmpty()
 }
 
+// Len 栈大小
 func (stack *SyncStack) Len() int {
 	stack.lock.RLock()
 	defer stack.lock.RUnlock()
