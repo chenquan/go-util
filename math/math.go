@@ -15,26 +15,34 @@
  *
  */
 
+// 数学运算
 package math
 
+// MaxInt 返回最大值
 func MaxInt(a, b int) int {
 	if a > b {
 		return a
 	}
 	return b
 }
+
+// MinInt 返回最小值
 func MinInt(a, b int) int {
 	if a > b {
 		return b
 	}
 	return a
 }
+
+// MaxInt64 返回最大值
 func MaxInt64(a, b int64) int64 {
 	if a > b {
 		return a
 	}
 	return b
 }
+
+// MinInt64 返回最小值
 func MinInt64(a, b int64) int64 {
 	if a > b {
 		return b
