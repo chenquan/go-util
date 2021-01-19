@@ -57,7 +57,6 @@ func Repeat(ctx context.Context, interval time.Duration, action func()) context.
 // handlePanic 处理panic并以日志输出
 func handlePanic() {
 	if r := recover(); r != nil {
-
 		log.Println("async", fmt.Sprintf("panic recovered: %ss \n %s", r, debug.Stack()))
 	}
 }

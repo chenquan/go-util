@@ -172,3 +172,22 @@ func BenchmarkByCount(b *testing.B) {
 		})
 	}
 }
+
+func TestBySlice(t *testing.T) {
+	type args struct {
+		grouper    []Grouper
+		functionBy func(obj interface{}) interface{}
+	}
+	tests := []struct {
+		name        string
+		args        args
+		wantResults []map[interface{}][]interface{}
+	}{}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotResults := BySlice(tt.args.grouper, tt.args.functionBy); !reflect.DeepEqual(gotResults, tt.wantResults) {
+				t.Errorf("BySlice() = %v, want %v", gotResults, tt.wantResults)
+			}
+		})
+	}
+}

@@ -87,3 +87,27 @@ func TestMustOpen(t *testing.T) {
 
 	}
 }
+
+func TestMkDir(t *testing.T) {
+	type args struct {
+		src string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			"1",
+			args{src: "test"},
+			false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := MkDir(tt.args.src); (err != nil) != tt.wantErr {
+				t.Errorf("MkDir() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
