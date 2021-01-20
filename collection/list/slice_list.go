@@ -19,10 +19,10 @@ package list
 
 import (
 	"errors"
-	"github.com/chenquan/go-utils/collection/api"
+	"github.com/chenquan/go-utils/collection/api/collection"
 )
 
-var _ api.List = (*SliceList)(nil)
+var _ collection.List = (*SliceList)(nil)
 
 const (
 	defaultCapacity = 10
@@ -34,13 +34,13 @@ var (
 )
 
 func NewSliceListDefault() *SliceList {
-	return &SliceList{data: make([]api.Element, 0)}
+	return &SliceList{data: make([]collection.Element, 0)}
 }
-func NewSliceListWithCollection(c api.Collection) *SliceList {
+func NewSliceListWithCollection(c collection.Collection) *SliceList {
 	size := c.Size()
 	if size != 0 {
 		slice := c.Slice()
-		elements := make([]api.Element, size)
+		elements := make([]collection.Element, size)
 		// 深拷贝
 		copy(elements, slice)
 		return &SliceList{data: elements, size: c.Size()}
@@ -52,19 +52,19 @@ func NewSliceList(initialCapacity int) *SliceList {
 	if initialCapacity < 0 {
 		initialCapacity = defaultCapacity
 	}
-	return &SliceList{data: make([]api.Element, 0, initialCapacity)}
+	return &SliceList{data: make([]collection.Element, 0, initialCapacity)}
 }
 
 type SliceList struct {
 	size int
-	data []api.Element
+	data []collection.Element
 }
 
-func (sliceList *SliceList) Iterator() api.Iterator {
+func (sliceList *SliceList) Iterator() collection.Iterator {
 	panic("implement me")
 }
 
-func (sliceList *SliceList) Slice() []api.Element {
+func (sliceList *SliceList) Slice() []collection.Element {
 	return sliceList.data
 }
 
@@ -76,16 +76,16 @@ func (sliceList *SliceList) IsEmpty() bool {
 	return sliceList.size == 0
 }
 
-func (sliceList *SliceList) Contains(e api.Element) bool {
+func (sliceList *SliceList) Contains(e collection.Element) bool {
 	return sliceList.Index(e) >= 0
 }
 
-func (sliceList *SliceList) Add(e api.Element) {
+func (sliceList *SliceList) Add(e collection.Element) {
 	sliceList.size++
 	sliceList.data = append(sliceList.data, e)
 }
 
-func (sliceList *SliceList) Remove(e api.Element) (b bool) {
+func (sliceList *SliceList) Remove(e collection.Element) (b bool) {
 	for i := 0; i < sliceList.size; i++ {
 		if sliceList.data[i] == e {
 			sliceList.fastRemove(i)
@@ -103,19 +103,19 @@ func (sliceList *SliceList) fastRemove(index int) {
 
 }
 
-func (sliceList *SliceList) ContainsAll(c api.Collection) {
+func (sliceList *SliceList) ContainsAll(c collection.Collection) {
 	slice := c.Slice()
-	elements := make([]api.Element, c.Size())
+	elements := make([]collection.Element, c.Size())
 	// 深拷贝
 	copy(elements, slice)
 	sliceList.data = append(sliceList.data, elements...)
 }
 
-func (sliceList *SliceList) AddAll(c api.Collection) (b bool) {
+func (sliceList *SliceList) AddAll(c collection.Collection) (b bool) {
 	b = c.Size() != 0
 	if b {
 		slice := c.Slice()
-		elements := make([]api.Element, c.Size())
+		elements := make([]collection.Element, c.Size())
 		// 深拷贝
 		copy(elements, slice)
 		sliceList.data = append(sliceList.data, elements...)
@@ -123,10 +123,10 @@ func (sliceList *SliceList) AddAll(c api.Collection) (b bool) {
 	return
 }
 
-func (sliceList *SliceList) RemoveAll(c api.Collection) (modified bool) {
+func (sliceList *SliceList) RemoveAll(c collection.Collection) (modified bool) {
 	return sliceList.batchRemove(c, false)
 }
-func (sliceList *SliceList) batchRemove(c api.Collection, complement bool) (modified bool) {
+func (sliceList *SliceList) batchRemove(c collection.Collection, complement bool) (modified bool) {
 	data := sliceList.data
 	size := sliceList.size
 	r, w := 0, 0
@@ -145,15 +145,15 @@ func (sliceList *SliceList) batchRemove(c api.Collection, complement bool) (modi
 	}
 	return modified
 }
-func (sliceList *SliceList) RetainAll(c api.Collection) (modified bool) {
+func (sliceList *SliceList) RetainAll(c collection.Collection) (modified bool) {
 	return sliceList.batchRemove(c, true)
 }
 func (sliceList *SliceList) Clear() {
-	sliceList.data = make([]api.Element, 0, defaultCapacity)
+	sliceList.data = make([]collection.Element, 0, defaultCapacity)
 	sliceList.size = 0
 }
 
-func (sliceList *SliceList) Equals(collection api.Collection) (b bool) {
+func (sliceList *SliceList) Equals(collection collection.Collection) (b bool) {
 
 	if sliceList == collection {
 		return true
@@ -171,11 +171,11 @@ func (sliceList *SliceList) Equals(collection api.Collection) (b bool) {
 
 }
 
-func (sliceList *SliceList) AddAllIndex(index int, c api.Collection) {
+func (sliceList *SliceList) AddAllIndex(index int, c collection.Collection) {
 	panic("implement me")
 }
 
-func (sliceList *SliceList) Get(index int) (e api.Element, err error) {
+func (sliceList *SliceList) Get(index int) (e collection.Element, err error) {
 	size := sliceList.size
 	if index > size {
 		e = IndexOutOfBound
@@ -185,7 +185,7 @@ func (sliceList *SliceList) Get(index int) (e api.Element, err error) {
 	return
 }
 
-func (sliceList *SliceList) Set(index int, e api.Element) {
+func (sliceList *SliceList) Set(index int, e collection.Element) {
 	size := sliceList.size
 	if index > size {
 		e = IndexOutOfBound
@@ -195,7 +195,7 @@ func (sliceList *SliceList) Set(index int, e api.Element) {
 	return
 }
 
-func (sliceList *SliceList) AddIndex(index int, e api.Element) {
+func (sliceList *SliceList) AddIndex(index int, e collection.Element) {
 	panic("implement me")
 }
 
@@ -203,14 +203,14 @@ func (sliceList *SliceList) RemoveIndex(index int) {
 	panic("implement me")
 }
 
-func (sliceList *SliceList) Index(e api.Element) (index int) {
+func (sliceList *SliceList) Index(e collection.Element) (index int) {
 	panic("implement me")
 }
 
-func (sliceList *SliceList) LastIndex(e api.Element) (index int) {
+func (sliceList *SliceList) LastIndex(e collection.Element) (index int) {
 	panic("implement me")
 }
 
-func (sliceList *SliceList) SubList(fromIndex, toIndex int) (list api.List) {
+func (sliceList *SliceList) SubList(fromIndex, toIndex int) (list collection.List) {
 	panic("implement me")
 }

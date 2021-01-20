@@ -15,21 +15,27 @@
  *
  */
 
-package api
+package collection
 
-type Element interface {
+type List interface {
+	Collection
+	AddAllIndex(index int, c Collection)
+	Get(index int) (e Element, err error)
+	Set(index int, e Element)
+	AddIndex(index int, e Element)
+	RemoveIndex(index int)
+	Index(e Element) (index int)
+	LastIndex(e Element) (index int)
+	SubList(fromIndex, toIndex int) (list List)
+	RetainAll(c Collection) (modified bool)
 }
-type Collection interface {
-	Size() int
-	IsEmpty() bool
-	Contains(e Element) (b bool)
+
+type IteratorList interface {
+	Iterator
+	HasPrevious() bool
+	Previous() bool
+	NextIndex() int
+	PreviousIndex() int
+	Set(e Element)
 	Add(e Element)
-	Remove(e Element) (b bool)
-	ContainsAll(collection Collection)
-	AddAll(collection Collection) (b bool)
-	RemoveAll(collection Collection) (b bool)
-	Clear()
-	Equals(collection Collection) (b bool)
-	Slice() []Element
-	Iterator() Iterator
 }

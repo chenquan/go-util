@@ -15,10 +15,21 @@
  *
  */
 
-package api
+package collection
 
-type Iterator interface {
-	HasNext() bool
-	Next() Element
-	Remove()
+type Element interface {
+}
+type Collection interface {
+	Size() int
+	IsEmpty() bool
+	Contains(e Element) (b bool)
+	Add(e Element)
+	Remove(e Element) (b bool)
+	ContainsAll(collection Collection)
+	AddAll(collection Collection) (b bool)
+	RemoveAll(collection Collection) (b bool)
+	Clear()
+	Equals(collection Collection) (b bool)
+	Slice() []Element
+	Iterator() Iterator
 }
