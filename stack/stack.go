@@ -73,7 +73,7 @@ func (stack *Stack) Pop() (interface{}, error) {
 	top := stack.top
 	// 将栈顶指向当前栈顶的下一个节点
 	stack.top = top.prev
-	return stack.top.data, nil
+	return top.data, nil
 }
 
 // Push 入栈

@@ -17,11 +17,12 @@
 
 package logging
 
-import "testing"
-
-func TestDebug(t *testing.T) {
-	Debug("日志")
-}
+import (
+	"bytes"
+	"github.com/stretchr/testify/assert"
+	"strings"
+	"testing"
+)
 
 func TestNewLog(t *testing.T) {
 	NewLogFile("logs/log.txt")
@@ -30,4 +31,36 @@ func TestNewLog(t *testing.T) {
 func TestNew(t *testing.T) {
 	New("logs/log.txt")
 	Debug("file and stdout")
+}
+
+func TestDebug(t *testing.T) {
+	buffer := bytes.Buffer{}
+	newLog(&buffer)
+	Debug("你好")
+	index := strings.Index(buffer.String(), "你好")
+	assert.Less(t, 0, index)
+}
+
+func TestInfo(t *testing.T) {
+	buffer := bytes.Buffer{}
+	newLog(&buffer)
+	Info("你好")
+	index := strings.Index(buffer.String(), "你好")
+	assert.Less(t, 0, index)
+}
+
+func TestWarn(t *testing.T) {
+	buffer := bytes.Buffer{}
+	newLog(&buffer)
+	Warn("你好")
+	index := strings.Index(buffer.String(), "你好")
+	assert.Less(t, 0, index)
+}
+
+func TestError(t *testing.T) {
+	buffer := bytes.Buffer{}
+	newLog(&buffer)
+	Error("你好")
+	index := strings.Index(buffer.String(), "你好")
+	assert.Less(t, 0, index)
 }
