@@ -25,7 +25,7 @@ import (
 type List interface {
 	collection.Collection
 	AddAllIndex(index int, c collection.Collection)
-	Get(index int) (e collection.Element)
+	Get(index int) (e collection.Element, err error)
 	Set(index int, e collection.Element)
 	AddIndex(index int, e collection.Element)
 	RemoveIndex(index int)

@@ -18,6 +18,7 @@
 package list
 
 import (
+	"errors"
 	"github.com/chenquan/go-utils/collection/api/collection"
 	"github.com/chenquan/go-utils/collection/api/iterator"
 	"github.com/chenquan/go-utils/collection/api/list"
@@ -27,6 +28,11 @@ var _ list.List = (*SliceList)(nil)
 
 const (
 	defaultCapacity = 10
+)
+
+var (
+	//NotFound        = errors.New("not found")
+	IndexOutOfBound = errors.New("index out of bound")
 )
 
 func NewSliceListDefault() *SliceList {
@@ -171,12 +177,24 @@ func (sliceList *SliceList) AddAllIndex(index int, c collection.Collection) {
 	panic("implement me")
 }
 
-func (sliceList *SliceList) Get(index int) (e collection.Element) {
-	panic("implement me")
+func (sliceList *SliceList) Get(index int) (e collection.Element, err error) {
+	size := sliceList.size
+	if index > size {
+		e = IndexOutOfBound
+	} else {
+		e = sliceList.data[index]
+	}
+	return
 }
 
 func (sliceList *SliceList) Set(index int, e collection.Element) {
-	panic("implement me")
+	size := sliceList.size
+	if index > size {
+		e = IndexOutOfBound
+	} else {
+		sliceList.data[index] = e
+	}
+	return
 }
 
 func (sliceList *SliceList) AddIndex(index int, e collection.Element) {
