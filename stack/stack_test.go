@@ -18,6 +18,7 @@
 package stack
 
 import (
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 )
@@ -41,27 +42,53 @@ func TestNewStack(t *testing.T) {
 	}
 }
 
-func TestStack_Push(t *testing.T) {
-	stack := NewStack()
-	strings := []interface{}{"1", 2, 23.23, nil,
-		struct {
-		}{},
-		struct {
-			name string
-		}{name: "1121"},
-	}
-	for _, s := range strings {
-		stack.Push(s)
-		if stack.top.data != s {
-			t.Errorf("Push() = %v, want %v", s, stack.top.data)
-		}
-	}
-}
+func testStack(t *testing.T, stack Stacker) {
+	assert.Equal(t, true, stack.IsEmpty())
 
-func TestStack_Clean(t *testing.T) {
-	stack := NewStack()
+	stack.Push("1")
+	assert.Equal(t, false, stack.IsEmpty())
+	assert.Equal(t, 1, stack.Len())
+
+	stack.Push("2")
+	assert.Equal(t, false, stack.IsEmpty())
+	assert.Equal(t, 2, stack.Len())
+
+	stack.Push("3")
+	assert.Equal(t, false, stack.IsEmpty())
+	assert.Equal(t, 3, stack.Len())
+
+	peek, err := stack.Peek()
+	assert.Equal(t, nil, err)
+	assert.Equal(t, "3", peek)
+	assert.Equal(t, 3, stack.Len())
+
+	pop, err := stack.Pop()
+	assert.Equal(t, nil, err)
+	assert.Equal(t, "3", pop)
+	assert.Equal(t, 2, stack.Len())
+
 	stack.Clean()
-	if stack.top != nil || stack.length != 0 {
-		t.Errorf("Clean() error")
+	assert.Equal(t, true, stack.IsEmpty())
+	assert.Equal(t, 0, stack.Len())
+
+	pop, err = stack.Pop()
+	assert.Equal(t, NotExistErr, err)
+	assert.Equal(t, nil, pop)
+	assert.Equal(t, 0, stack.Len())
+
+	peek, err = stack.Peek()
+	assert.Equal(t, NotExistErr, err)
+	assert.Equal(t, nil, peek)
+	assert.Equal(t, 0, stack.Len())
+}
+func TestStack(t *testing.T) {
+	stacks := [3]Stacker{
+		NewStack(),
+		NewDefaultSyncStack(),
+		NewSyncStack(NewStack()),
+	}
+	for _, s := range stacks {
+
+		testStack(t, s)
 	}
 }
