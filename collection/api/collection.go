@@ -15,9 +15,7 @@
  *
  */
 
-package collection
-
-import "github.com/chenquan/go-utils/collection/api/iterator"
+package api
 
 type Element interface {
 }
@@ -33,5 +31,5 @@ type Collection interface {
 	Clear()
 	Equals(collection Collection) (b bool)
 	Slice() []Element
-	Iterator() iterator.Iterator
+	Iterator() Iterator
 }

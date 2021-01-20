@@ -15,32 +15,27 @@
  *
  */
 
-package list
-
-import (
-	"github.com/chenquan/go-utils/collection/api/collection"
-	"github.com/chenquan/go-utils/collection/api/iterator"
-)
+package api
 
 type List interface {
-	collection.Collection
-	AddAllIndex(index int, c collection.Collection)
-	Get(index int) (e collection.Element, err error)
-	Set(index int, e collection.Element)
-	AddIndex(index int, e collection.Element)
+	Collection
+	AddAllIndex(index int, c Collection)
+	Get(index int) (e Element, err error)
+	Set(index int, e Element)
+	AddIndex(index int, e Element)
 	RemoveIndex(index int)
-	Index(e collection.Element) (index int)
-	LastIndex(e collection.Element) (index int)
+	Index(e Element) (index int)
+	LastIndex(e Element) (index int)
 	SubList(fromIndex, toIndex int) (list List)
-	RetainAll(c collection.Collection) (modified bool)
+	RetainAll(c Collection) (modified bool)
 }
 
-type Iterator interface {
-	iterator.Iterator
+type IteratorList interface {
+	Iterator
 	HasPrevious() bool
 	Previous() bool
 	NextIndex() int
 	PreviousIndex() int
-	Set(e collection.Element)
-	Add(e collection.Element)
+	Set(e Element)
+	Add(e Element)
 }

@@ -15,12 +15,10 @@
  *
  */
 
-package iterator
-
-import "github.com/chenquan/go-utils/collection/api/collection"
+package api
 
 type Iterator interface {
 	HasNext() bool
-	Next() collection.Element
+	Next() Element
 	Remove()
 }
