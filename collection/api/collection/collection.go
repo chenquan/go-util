@@ -22,14 +22,14 @@ type Element interface {
 type Collection interface {
 	Size() int
 	IsEmpty() bool
-	Contains(e Element) (b bool)
-	Add(e Element)
-	Remove(e Element) (b bool)
-	ContainsAll(collection Collection)
-	AddAll(collection Collection) (b bool)
-	RemoveAll(collection Collection) (b bool)
+	Contains(e Element) bool
+	Add(e Element) bool
+	Remove(e Element) bool
+	ContainsAll(collection Collection) bool
+	AddAll(collection Collection) bool
+	RemoveAll(collection Collection) bool
 	Clear()
-	Equals(collection Collection) (b bool)
+	Equals(collection Collection) bool
 	Slice() []Element
 	Iterator() Iterator
 }

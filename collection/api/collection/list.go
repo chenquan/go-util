@@ -19,14 +19,14 @@ package collection
 
 type List interface {
 	Collection
-	AddAllIndex(index int, c Collection)
+	AddAllIndex(index int, c Collection) error
 	Get(index int) (e Element, err error)
 	Set(index int, e Element)
-	AddIndex(index int, e Element)
-	RemoveIndex(index int)
+	AddIndex(index int, e Element) error
+	RemoveIndex(index int) (Element, error)
 	Index(e Element) (index int)
 	LastIndex(e Element) (index int)
-	SubList(fromIndex, toIndex int) (list List)
+	SubList(fromIndex, toIndex int) (list List, err error)
 	RetainAll(c Collection) (modified bool)
 }
 

@@ -19,6 +19,6 @@ package collection
 
 type Iterator interface {
 	HasNext() bool
-	Next() Element
-	Remove()
+	Next() (Element, error)
+	Remove() error
 }
