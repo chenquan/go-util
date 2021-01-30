@@ -15,27 +15,26 @@
  *
  */
 
-package collection
+package list
 
-type List interface {
-	Collection
-	AddAllIndex(index int, c Collection) error
-	Get(index int) (Element, error)
-	Set(index int, e Element) error
-	AddIndex(index int, e Element) error
-	RemoveIndex(index int) (Element, error)
-	Index(e Element) int
-	LastIndex(e Element) int
-	SubList(fromIndex, toIndex int) (List, error)
-	RetainAll(c Collection) bool
+type indexOutOfBoundsException struct {
+	str string
 }
 
-type IteratorList interface {
-	Iterator
-	HasPrevious() bool
-	Previous() bool
-	NextIndex() int
-	PreviousIndex() int
-	Set(e Element)
-	Add(e Element)
+func NewIndexOutOfBoundsExceptionDefault() *indexOutOfBoundsException {
+	return &indexOutOfBoundsException{}
+}
+
+func NewIndexOutOfBoundsException(str string) *indexOutOfBoundsException {
+	return &indexOutOfBoundsException{str: str}
+}
+
+// Error 实现 error 接口
+func (i indexOutOfBoundsException) Error() string {
+	str := "index out of bound"
+	if len(i.str) != 0 {
+
+		return str + "," + i.str
+	}
+	return str
 }

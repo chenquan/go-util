@@ -32,6 +32,8 @@ const (
 var (
 	//NotFound        = errors.New("not found")
 	IndexOutOfBound = errors.New("index out of bound")
+	NoSuchElement   = errors.New("no such element")
+	IllegalState    = errors.New("illegal state")
 )
 
 func NewSliceListDefault() *SliceList {
@@ -41,10 +43,7 @@ func NewSliceListWithCollection(c collection.Collection) *SliceList {
 	size := c.Size()
 	if size != 0 {
 		slice := c.Slice()
-		elements := make([]collection.Element, size)
-		// 深拷贝
-		copy(elements, slice)
-		return &SliceList{data: elements, size: c.Size()}
+		return &SliceList{data: slice, size: c.Size()}
 	}
 	return NewSliceListDefault()
 }
@@ -62,7 +61,10 @@ type SliceList struct {
 }
 
 func (sliceList *SliceList) Slice() []collection.Element {
-	return sliceList.data
+	elements := make([]collection.Element, sliceList.size)
+	// 深拷贝
+	copy(elements, sliceList.data)
+	return elements
 }
 
 func (sliceList *SliceList) Size() int {
@@ -78,8 +80,8 @@ func (sliceList *SliceList) Contains(e collection.Element) bool {
 }
 
 func (sliceList *SliceList) Add(e collection.Element) bool {
-	sliceList.size++
 	sliceList.data = append(sliceList.data, e)
+	sliceList.size++
 	return true
 }
 
@@ -113,10 +115,7 @@ func (sliceList *SliceList) AddAll(c collection.Collection) (b bool) {
 	b = c.Size() != 0
 	if b {
 		slice := c.Slice()
-		elements := make([]collection.Element, c.Size())
-		// 深拷贝
-		copy(elements, slice)
-		sliceList.data = append(sliceList.data, elements...)
+		sliceList.data = append(sliceList.data, slice...)
 		sliceList.size += c.Size()
 	}
 	return
@@ -160,14 +159,10 @@ func (sliceList *SliceList) Equals(collection collection.Collection) (b bool) {
 	iterator1 := sliceList.Iterator()
 	iterator2 := collection.Iterator()
 	for iterator1.HasNext() && iterator2.HasNext() {
-		e1, err1 := iterator1.Next()
-		if err1 != nil {
-			return false
-		}
-		e2, err2 := iterator2.Next()
-		if err2 != nil {
-			return false
-		}
+		e1, _ := iterator1.Next()
+
+		e2, _ := iterator2.Next()
+
 		if e1 != e2 {
 			return false
 		}
@@ -175,35 +170,40 @@ func (sliceList *SliceList) Equals(collection collection.Collection) (b bool) {
 	return !(iterator1.HasNext() || iterator2.HasNext())
 
 }
-
-func (sliceList *SliceList) AddAllIndex(index int, c collection.Collection) error {
-	if index > sliceList.size-1 {
+func (sliceList *SliceList) rangeCheckForAdd(index int) error {
+	if index > sliceList.size || index < 0 {
 		return IndexOutOfBound
+	}
+	return nil
+}
+func (sliceList *SliceList) AddAllIndex(index int, c collection.Collection) error {
+	if err := sliceList.rangeCheckForAdd(index); err != nil {
+		return err
 	}
 	slice := c.Slice()
 	if c.Size() != 0 {
-		front := sliceList.data[:index]
-		end := sliceList.data[index:]
-		sliceList.data = append(front, slice...)
-		sliceList.data = append(sliceList.data, end...)
+		sliceList.data = append(sliceList.data, slice...)
+		copy(sliceList.data[index+c.Size():], sliceList.data[index:])
+		copy(sliceList.data[index:], slice)
+		sliceList.size += c.Size()
 	}
 	return nil
 }
 
 func (sliceList *SliceList) Get(index int) (e collection.Element, err error) {
 	size := sliceList.size
-	if index > size {
-		e = IndexOutOfBound
+	if index >= size || index < 0 {
+		err = IndexOutOfBound
 	} else {
 		e = sliceList.data[index]
 	}
 	return
 }
 
-func (sliceList *SliceList) Set(index int, e collection.Element) {
+func (sliceList *SliceList) Set(index int, e collection.Element) (err error) {
 	size := sliceList.size
-	if index > size {
-		e = IndexOutOfBound
+	if index >= size {
+		err = IndexOutOfBound
 	} else {
 		sliceList.data[index] = e
 	}
@@ -211,14 +211,13 @@ func (sliceList *SliceList) Set(index int, e collection.Element) {
 }
 
 func (sliceList *SliceList) AddIndex(index int, e collection.Element) error {
-	if index > sliceList.size-1 {
-		return IndexOutOfBound
+	if err := sliceList.rangeCheckForAdd(index); err != nil {
+		return err
 	}
-	front := sliceList.data[:index]
-	end := sliceList.data[index:]
-
-	sliceList.data = append(front, e)
-	sliceList.data = append(sliceList.data, end...)
+	sliceList.data = append(sliceList.data, e)
+	copy(sliceList.data[index+1:], sliceList.data[index:])
+	sliceList.data[index] = e
+	sliceList.size++
 	return nil
 }
 
@@ -227,7 +226,8 @@ func (sliceList *SliceList) RemoveIndex(index int) (collection.Element, error) {
 		return nil, IndexOutOfBound
 	}
 	element := sliceList.data[index]
-	sliceList.data = append(sliceList.data[:index], sliceList.data[index+1:])
+	sliceList.data = append(sliceList.data[:index], sliceList.data[index+1:]...)
+	sliceList.size--
 	return element, nil
 }
 
@@ -251,55 +251,35 @@ func (sliceList *SliceList) LastIndex(e collection.Element) (index int) {
 	return -1
 }
 
-func (sliceList *SliceList) SubList(fromIndex, toIndex int) (list collection.List, err error) {
+func (sliceList *SliceList) subListRangeCheck(fromIndex, toIndex int) error {
+
 	if fromIndex < 0 {
-		return nil, fmt.Errorf("fromIndex = %d", fromIndex)
+		return NewIndexOutOfBoundsException(fmt.Sprintf("fromIndex = %d", fromIndex))
 	}
 	if toIndex > sliceList.size {
-		return nil, fmt.Errorf("toIndex = %d", toIndex)
+		return NewIndexOutOfBoundsException(fmt.Sprintf("toIndex = %d", toIndex))
 
 	}
 	if fromIndex > toIndex {
-		return nil, fmt.Errorf("fromIndex(%d) > toIndex(%d)", fromIndex, toIndex)
+		return NewIndexOutOfBoundsException(fmt.Sprintf("fromIndex(%d) > toIndex(%d)", fromIndex, toIndex))
+	}
+	return nil
+}
+func (sliceList *SliceList) SubList(fromIndex, toIndex int) (collection.List, error) {
+	if err := sliceList.subListRangeCheck(fromIndex, toIndex); err != nil {
+		return nil, err
 	}
 	return &SliceList{
-			size: fromIndex - toIndex,
+			size: toIndex - fromIndex,
 			data: sliceList.data[fromIndex:toIndex],
 		},
 		nil
 }
 
 func (sliceList *SliceList) Iterator() collection.Iterator {
-	return &SliceListIterator{
+	return &listIterator{
 		lastRet: -1,
 		cursor:  0,
 		data:    sliceList,
 	}
-}
-
-type SliceListIterator struct {
-	cursor  int //游标,指向下一个元素
-	lastRet int
-	data    *SliceList
-}
-
-func (s *SliceListIterator) HasNext() bool {
-	return s.data.size != s.cursor
-}
-
-func (s *SliceListIterator) Next() (collection.Element, error) {
-	if s.cursor >= s.data.size {
-		return nil, errors.New("no such element")
-	}
-	s.lastRet = s.cursor
-	s.cursor++
-	return s.data.Get(s.lastRet)
-}
-
-func (s *SliceListIterator) Remove() error {
-	if s.lastRet < 0 {
-		return errors.New("illegal state")
-	}
-	_, err := s.data.RemoveIndex(s.lastRet)
-	return err
 }
