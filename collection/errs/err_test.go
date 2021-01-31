@@ -15,61 +15,61 @@
  *
  */
 
-package list
+package errs
 
 import (
 	"reflect"
 	"testing"
 )
 
-func TestNewIndexOutOfBoundsException(t *testing.T) {
+func TestNewIndexOutOfBoundsError(t *testing.T) {
 	type args struct {
 		str string
 	}
 	tests := []struct {
 		name string
 		args args
-		want *indexOutOfBoundsException
+		want *indexOutOfBoundsError
 	}{
 		{
 			"1",
 			args{""},
-			&indexOutOfBoundsException{str: ""},
+			&indexOutOfBoundsError{str: ""},
 		}, {
 			"2",
-			args{"error"},
-			&indexOutOfBoundsException{str: "error"},
+			args{"errs"},
+			&indexOutOfBoundsError{str: "errs"},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewIndexOutOfBoundsException(tt.args.str); !reflect.DeepEqual(got, tt.want) {
+			if got := NewIndexOutOfBoundsError(tt.args.str); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewIndexOutOfBoundsException() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestNewIndexOutOfBoundsExceptionDefault(t *testing.T) {
+func TestNewIndexOutOfBoundsErrorDefault(t *testing.T) {
 	tests := []struct {
 		name string
-		want *indexOutOfBoundsException
+		want *indexOutOfBoundsError
 	}{
 		{
 			"1",
-			&indexOutOfBoundsException{},
+			&indexOutOfBoundsError{},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := NewIndexOutOfBoundsExceptionDefault(); !reflect.DeepEqual(got, tt.want) {
+			if got := NewIndexOutOfBoundsErrorDefault(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewIndexOutOfBoundsExceptionDefault() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func Test_indexOutOfBoundsException_Error(t *testing.T) {
+func Test_indexOutOfBoundsError_Error(t *testing.T) {
 	type fields struct {
 		str string
 	}
@@ -90,7 +90,7 @@ func Test_indexOutOfBoundsException_Error(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			i := indexOutOfBoundsException{
+			i := indexOutOfBoundsError{
 				str: tt.fields.str,
 			}
 			if got := i.Error(); got != tt.want {

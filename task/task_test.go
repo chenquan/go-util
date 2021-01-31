@@ -22,13 +22,13 @@ func TestTask(t *testing.T) {
 	jobId2 := task.Add(newJob2)
 	fmt.Println(jobId1)
 	if jobId1 == "" {
-		t.Errorf("Add error")
+		t.Errorf("Add errs")
 
 	}
 	job1 := task.Get(jobId1)
 	job2 := task.Get(jobId2)
 	if job1 != newJob1 {
-		t.Errorf("Get error")
+		t.Errorf("Get errs")
 	}
 	err := task.Run(jobId1)
 	err = job2.Run()
@@ -43,6 +43,6 @@ func TestTask(t *testing.T) {
 	id := job1.JobId()
 	task.Delete(id)
 	if task.Get(id) != nil {
-		t.Errorf("Delete error")
+		t.Errorf("Delete errs")
 	}
 }

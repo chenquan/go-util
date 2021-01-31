@@ -19,17 +19,20 @@ package list
 
 import "github.com/chenquan/go-utils/collection/api/collection"
 
-type listIterator struct {
+// itrList 实现 collection.Iterator 接口
+type itrList struct {
 	cursor  int //游标,指向下一个元素
 	lastRet int
 	data    collection.List
 }
 
-func (s *listIterator) HasNext() bool {
+// HasNext 如果当前迭代还有更多的元素则返回 true,否则返回 false
+func (s *itrList) HasNext() bool {
 	return s.data.Size() != s.cursor
 }
 
-func (s *listIterator) Next() (collection.Element, error) {
+// Next 返回当前迭代中的下一个元素
+func (s *itrList) Next() (collection.Element, error) {
 	if s.cursor >= s.data.Size() {
 		return nil, NoSuchElement
 	}
@@ -38,7 +41,10 @@ func (s *listIterator) Next() (collection.Element, error) {
 	return s.data.Get(s.lastRet)
 }
 
-func (s *listIterator) Remove() error {
+// Remove 从基础集合中移除当前迭代器返回的最后一个元素
+//
+// 每次调用 Next 方法,才可以调用一次此方法.
+func (s *itrList) Remove() error {
 	if s.lastRet < 0 {
 		return IllegalState
 	}

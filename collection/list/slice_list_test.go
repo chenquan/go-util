@@ -298,7 +298,8 @@ func TestSliceList_Contains(t *testing.T) {
 				size: tt.fields.size,
 				data: tt.fields.data,
 			}
-			if got := sliceList.Contains(tt.args.e); got != tt.want {
+			contains, _ := sliceList.Contains(tt.args.e)
+			if got := contains; got != tt.want {
 				t.Errorf("Contains() = %v, want %v", got, tt.want)
 			}
 		})
@@ -310,18 +311,18 @@ func TestSliceList_Add(t *testing.T) {
 		size: 0,
 		data: []collection.Element{},
 	}
-	sliceList.Add("1")
+	_, _ = sliceList.Add("1")
 	assert.Equal(t, 1, sliceList.size)
 	assert.Equal(t, []collection.Element{"1"}, sliceList.data)
 
-	sliceList.Add("2")
+	_, _ = sliceList.Add("2")
 	assert.Equal(t, 2, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "2"}, sliceList.data)
 
-	sliceList.Add("")
+	_, _ = sliceList.Add("")
 	assert.Equal(t, 3, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "2", ""}, sliceList.data)
-	sliceList.Add(nil)
+	_, _ = sliceList.Add(nil)
 	assert.Equal(t, 4, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "2", "", nil}, sliceList.data)
 
@@ -333,22 +334,22 @@ func TestSliceList_Remove(t *testing.T) {
 		data: []collection.Element{"1", 2},
 	}
 	var remove bool
-	remove = sliceList.Remove("1")
+	remove, _ = sliceList.Remove("1")
 	assert.Equal(t, 1, sliceList.size)
 	assert.Equal(t, true, remove)
 	assert.Equal(t, []collection.Element{2}, sliceList.data)
 
-	remove = sliceList.Remove(12)
+	remove, _ = sliceList.Remove(12)
 	assert.Equal(t, 1, sliceList.size)
 	assert.Equal(t, false, remove)
 	assert.Equal(t, []collection.Element{2}, sliceList.data)
 
-	remove = sliceList.Remove(2)
+	remove, _ = sliceList.Remove(2)
 	assert.Equal(t, 0, sliceList.size)
 	assert.Equal(t, true, remove)
 	assert.Equal(t, []collection.Element{}, sliceList.data)
 
-	remove = sliceList.Remove(4)
+	remove, _ = sliceList.Remove(4)
 	assert.Equal(t, 0, sliceList.size)
 	assert.Equal(t, false, remove)
 	assert.Equal(t, []collection.Element{}, sliceList.data)
@@ -372,11 +373,14 @@ func TestSliceList_ContainsAll(t *testing.T) {
 		size: 2,
 		data: []collection.Element{"1", "22"},
 	}
-
-	assert.Equal(t, true, sliceList.ContainsAll(sliceList))
-	assert.Equal(t, true, sliceList.ContainsAll(c1))
-	assert.Equal(t, true, sliceList.ContainsAll(c2))
-	assert.Equal(t, false, sliceList.ContainsAll(c3))
+	containsAll, _ := sliceList.ContainsAll(sliceList)
+	assert.Equal(t, true, containsAll)
+	containsAll, _ = sliceList.ContainsAll(c1)
+	assert.Equal(t, true, containsAll)
+	containsAll, _ = sliceList.ContainsAll(c2)
+	assert.Equal(t, true, containsAll)
+	containsAll, _ = sliceList.ContainsAll(c3)
+	assert.Equal(t, false, containsAll)
 
 }
 
@@ -386,7 +390,7 @@ func TestSliceList_AddAll(t *testing.T) {
 		data: []collection.Element{"1", 2},
 	}
 	var b bool
-	b = sliceList.AddAll(sliceList)
+	b, _ = sliceList.AddAll(sliceList)
 	assert.Equal(t, true, b)
 	assert.Equal(t, 4, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", 2, "1", 2}, sliceList.data)
@@ -395,7 +399,7 @@ func TestSliceList_AddAll(t *testing.T) {
 		size: 2,
 		data: []collection.Element{"1", 2},
 	}
-	b = sliceList.AddAll(&SliceList{
+	b, _ = sliceList.AddAll(&SliceList{
 		size: 0,
 		data: []collection.Element{},
 	})
@@ -411,7 +415,7 @@ func TestSliceList_RemoveAll(t *testing.T) {
 		data: []collection.Element{"1", 2, 3},
 	}
 	var modified bool
-	modified = sliceList.RemoveAll(sliceList)
+	modified, _ = sliceList.RemoveAll(sliceList)
 	assert.Equal(t, true, modified)
 	assert.Equal(t, 0, sliceList.size)
 	assert.Equal(t, []collection.Element{}, sliceList.data)
@@ -424,7 +428,7 @@ func TestSliceList_RemoveAll(t *testing.T) {
 		size: 1,
 		data: []collection.Element{"1"},
 	}
-	modified = sliceList.RemoveAll(c1)
+	modified, _ = sliceList.RemoveAll(c1)
 	assert.Equal(t, true, modified)
 	assert.Equal(t, 2, sliceList.size)
 	assert.Equal(t, []collection.Element{2, 3}, sliceList.data)
@@ -437,7 +441,7 @@ func TestSliceList_RemoveAll(t *testing.T) {
 		size: 1,
 		data: []collection.Element{"1", 4, 34, 34, 34, 34, 1, 43, 4, 34, 3, 4},
 	}
-	modified = sliceList.RemoveAll(c2)
+	modified, _ = sliceList.RemoveAll(c2)
 	assert.Equal(t, true, modified)
 	assert.Equal(t, 2, sliceList.size)
 	assert.Equal(t, []collection.Element{2, 3}, sliceList.data)
@@ -450,7 +454,7 @@ func TestSliceList_RetainAll(t *testing.T) {
 		data: []collection.Element{"1", 2, 3},
 	}
 
-	sliceList.RetainAll(sliceList)
+	_, _ = sliceList.RetainAll(sliceList)
 	assert.Equal(t, 3, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", 2, 3}, sliceList.data)
 
@@ -458,7 +462,7 @@ func TestSliceList_RetainAll(t *testing.T) {
 		size: 2,
 		data: []collection.Element{"1", 2},
 	}
-	sliceList.RetainAll(sliceList1)
+	_, _ = sliceList.RetainAll(sliceList1)
 	assert.Equal(t, 2, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", 2}, sliceList.data)
 
@@ -466,7 +470,7 @@ func TestSliceList_RetainAll(t *testing.T) {
 		size: 0,
 		data: []collection.Element{},
 	}
-	sliceList.RetainAll(sliceList2)
+	_, _ = sliceList.RetainAll(sliceList2)
 	assert.Equal(t, 0, sliceList.size)
 	assert.Equal(t, []collection.Element{}, sliceList.data)
 
@@ -477,7 +481,7 @@ func TestSliceList_Clear(t *testing.T) {
 		size: 3,
 		data: []collection.Element{"1", 2, 3},
 	}
-	sliceList.Clear()
+	_ = sliceList.Clear()
 	assert.Equal(t, 0, sliceList.size)
 	assert.Equal(t, []collection.Element{}, sliceList.data)
 	assert.Equal(t, defaultCapacity, cap(sliceList.data))
@@ -621,7 +625,7 @@ func TestSliceList_Get(t *testing.T) {
 			}
 			gotE, err := sliceList.Get(tt.args.index)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Get() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Get() errs = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(gotE, tt.wantE) {
@@ -766,7 +770,7 @@ func TestSliceList_RemoveIndex(t *testing.T) {
 			}
 			got, err := sliceList.RemoveIndex(tt.args.index)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("RemoveIndex() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("RemoveIndex() errs = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
@@ -1004,7 +1008,7 @@ func TestSliceList_SubList(t *testing.T) {
 			}
 			gotList, err := sliceList.SubList(tt.args.fromIndex, tt.args.toIndex)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("SubList() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("SubList() errs = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(gotList, tt.wantList) {

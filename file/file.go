@@ -56,7 +56,7 @@ func CheckExist(src string) bool {
 // CheckPermission 检查文件是否具有权限
 func CheckPermission(src string) bool {
 	_, err := os.Stat(src)
-	//if err == nil {
+	//if errs == nil {
 	//	return true
 	//}
 	return os.IsPermission(err)
@@ -98,7 +98,7 @@ func Open(name string, flag int, perm os.FileMode) (*os.File, error) {
 func MustOpen(filepath string) (*os.File, error) {
 	dir, err := os.Getwd()
 	if err != nil {
-		return nil, fmt.Errorf("os.Getwd err: %v", err)
+		return nil, fmt.Errorf("os.Getwd errs: %v", err)
 	}
 	dirPath, _ := path.Split(filepath)
 	dir = dir + "/" + dirPath
@@ -109,7 +109,7 @@ func MustOpen(filepath string) (*os.File, error) {
 
 	err = IsNotExistMkDir(dir)
 	if err != nil {
-		return nil, fmt.Errorf("file.IsNotExistMkDir src: %s, err: %v", filepath, err)
+		return nil, fmt.Errorf("file.IsNotExistMkDir src: %s, errs: %v", filepath, err)
 	}
 
 	f, err := Open(filepath, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0644)

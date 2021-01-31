@@ -14,23 +14,26 @@
  *    limitations under the License.
  *
  */
+// 错误处理包
+package errs
 
-package list
-
-type indexOutOfBoundsException struct {
+// indexOutOfBoundsException 实现 errs 接口
+type indexOutOfBoundsError struct {
 	str string
 }
 
-func NewIndexOutOfBoundsExceptionDefault() *indexOutOfBoundsException {
-	return &indexOutOfBoundsException{}
+// NewIndexOutOfBoundsExceptionDefault 新增默认索引超出错误
+func NewIndexOutOfBoundsErrorDefault() *indexOutOfBoundsError {
+	return &indexOutOfBoundsError{}
 }
 
-func NewIndexOutOfBoundsException(str string) *indexOutOfBoundsException {
-	return &indexOutOfBoundsException{str: str}
+// NewIndexOutOfBoundsError 新增默认索引超出错误
+func NewIndexOutOfBoundsError(str string) *indexOutOfBoundsError {
+	return &indexOutOfBoundsError{str: str}
 }
 
-// Error 实现 error 接口
-func (i indexOutOfBoundsException) Error() string {
+// Error 实现 errs 接口
+func (i indexOutOfBoundsError) Error() string {
 	str := "index out of bound"
 	if len(i.str) != 0 {
 

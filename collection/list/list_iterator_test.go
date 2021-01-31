@@ -24,7 +24,7 @@ import (
 )
 
 func Test_sliceListIterator(t *testing.T) {
-	l := &listIterator{
+	l := &itrList{
 		lastRet: -1,
 		cursor:  0,
 		data: &SliceList{
