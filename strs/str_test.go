@@ -1166,7 +1166,7 @@ func TestAbbreviate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := Abbreviate(tt.args.str, tt.args.abbrevMarker, tt.args.offset, tt.args.maxWidth)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("Abbreviate() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("Abbreviate() errs = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {

@@ -27,10 +27,10 @@ var filePath = "test/test1.txt"
 
 func TestCheckNotExist(t *testing.T) {
 	if CheckNotExist("test/test1.txt") {
-		t.Error("error")
+		t.Error("errs")
 	}
 	if !CheckNotExist("test/test11.txt") {
-		t.Error("error")
+		t.Error("errs")
 	}
 }
 
@@ -42,15 +42,15 @@ func TestGetSize(t *testing.T) {
 		fmt.Println(size)
 
 	} else {
-		t.Error("error")
+		t.Error("errs")
 	}
 	open, _ = os.Open("test/test1.txt")
 	size, err = GetSize(open)
 	if err != nil {
-		t.Error("error")
+		t.Error("errs")
 	} else {
 		if size != 8 {
-			t.Error("error")
+			t.Error("errs")
 
 		}
 	}
@@ -59,25 +59,25 @@ func TestGetSize(t *testing.T) {
 func TestCheckExist(t *testing.T) {
 	fmt.Println(CheckExist("test/test1.txt"))
 	if !CheckExist("test/test1.txt") {
-		t.Error("error")
+		t.Error("errs")
 	}
 	if CheckExist("test/test11.txt") {
-		t.Error("error")
+		t.Error("errs")
 	}
 }
 
 func TestCheckPermission(t *testing.T) {
 	//if !CheckPermission("test/test1.txt") {
-	//	t.Error("error")
+	//	t.Error("errs")
 	//}
 }
 
 func TestGetExt(t *testing.T) {
 	if GetExt(filePath) != ".txt" {
-		t.Error("error")
+		t.Error("errs")
 	}
 	if GetExt("test/log.log") != ".log" {
-		t.Error("error")
+		t.Error("errs")
 	}
 
 }
@@ -106,7 +106,7 @@ func TestMkDir(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := MkDir(tt.args.src); (err != nil) != tt.wantErr {
-				t.Errorf("MkDir() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("MkDir() errs = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

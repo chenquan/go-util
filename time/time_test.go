@@ -520,7 +520,7 @@ func TestParseDateTimeFormat(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := ParseDateTimeFormat(tt.args.timeFormat)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseDateTimeFormat() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ParseDateTimeFormat() errs = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
@@ -573,7 +573,7 @@ func TestParseDateTimeFormatInLocal(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := ParseDateTimeFormatInLocal(tt.args.timeFormat, tt.args.location)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseDateTimeFormatInLocal() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ParseDateTimeFormatInLocal() errs = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
@@ -616,7 +616,7 @@ func TestParseDateFormat(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := ParseDateFormat(tt.args.timeFormat)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseDateFormat() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ParseDateFormat() errs = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
@@ -671,7 +671,7 @@ func TestParseDateFormatInLocal(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := ParseDateFormatInLocal(tt.args.timeFormat, tt.args.location)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseDateFormatInLocal() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ParseDateFormatInLocal() errs = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {

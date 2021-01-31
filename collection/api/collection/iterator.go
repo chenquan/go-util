@@ -18,7 +18,12 @@
 package collection
 
 type Iterator interface {
+	// HasNext 如果当前迭代还有更多的元素则返回 true,否则返回 false
 	HasNext() bool
+	// Next 返回当前迭代中的下一个元素
 	Next() (Element, error)
+	// Remove 从基础集合中移除当前迭代器返回的最后一个元素
+	//
+	// 每次调用 Next 方法,才可以调用一次此方法.
 	Remove() error
 }

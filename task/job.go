@@ -45,7 +45,7 @@ type Job struct {
 
 // NewJob 新建一个作业
 // 列如:
-// var JobFunc1 JobFunc = func() error {
+// var JobFunc1 JobFunc = func() errs {
 //		fmt.Println("第一个任务，我运行了")
 //		return nil
 //	}
