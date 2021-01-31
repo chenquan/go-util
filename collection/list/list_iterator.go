@@ -21,9 +21,9 @@ import "github.com/chenquan/go-utils/collection/api/collection"
 
 // itrList 实现 collection.Iterator 接口
 type itrList struct {
-	cursor  int //游标,指向下一个元素
-	lastRet int
-	data    collection.List
+	cursor  int             // 游标,指向下一个元素
+	lastRet int             // 最近一次返回的下标
+	data    collection.List // 数据
 }
 
 // HasNext 如果当前迭代还有更多的元素则返回 true,否则返回 false

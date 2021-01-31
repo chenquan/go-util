@@ -67,8 +67,8 @@ func NewSliceList(initialCapacity int) *SliceList {
 
 // SliceList 实现 collection.List 接口
 type SliceList struct {
-	size int
-	data []collection.Element
+	size int                  // 列表大小
+	data []collection.Element // 数据
 }
 
 // Slice 返回当前切片列表所有元素的切片
