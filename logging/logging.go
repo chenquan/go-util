@@ -19,7 +19,7 @@ package logging
 
 import (
 	"fmt"
-	"github.com/chenquan/go-utils/file"
+	"github.com/chenquan/go-util/file"
 	"io"
 	log "log"
 	"os"

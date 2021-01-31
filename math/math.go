@@ -15,7 +15,7 @@
  *
  */
 
-// 数学运算
+// Package math 数学运算
 package math
 
 // MaxInt 返回最大值

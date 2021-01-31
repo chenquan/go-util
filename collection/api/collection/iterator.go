@@ -17,6 +17,7 @@
 
 package collection
 
+// Iterator 迭代器
 type Iterator interface {
 	// HasNext 如果当前迭代还有更多的元素则返回 true,否则返回 false
 	HasNext() bool

@@ -20,8 +20,8 @@ package list
 import (
 	"errors"
 	"fmt"
-	"github.com/chenquan/go-utils/collection/api/collection"
-	"github.com/chenquan/go-utils/collection/errs"
+	"github.com/chenquan/go-util/collection/api/collection"
+	"github.com/chenquan/go-util/collection/errs"
 )
 
 var _ collection.List = (*SliceList)(nil)
