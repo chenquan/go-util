@@ -19,8 +19,8 @@ package str
 
 import (
 	"fmt"
-	"github.com/chenquan/go-utils/convert"
-	"github.com/chenquan/go-utils/math"
+	"github.com/chenquan/go-util/convert"
+	"github.com/chenquan/go-util/math"
 	"regexp"
 	"strings"
 	"unicode"

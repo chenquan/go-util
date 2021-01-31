@@ -17,7 +17,7 @@
 
 package list
 
-import "github.com/chenquan/go-utils/collection/api/collection"
+import "github.com/chenquan/go-util/collection/api/collection"
 
 // itrList 实现 collection.Iterator 接口
 type itrList struct {
