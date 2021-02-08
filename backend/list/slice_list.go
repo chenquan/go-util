@@ -18,10 +18,9 @@
 package list
 
 import (
-	"errors"
 	"fmt"
-	"github.com/chenquan/go-util/collection/api/collection"
-	"github.com/chenquan/go-util/collection/errs"
+	"github.com/chenquan/go-util/backend/api/collection"
+	"github.com/chenquan/go-util/backend/errs"
 )
 
 var _ collection.List = (*SliceList)(nil)
@@ -29,13 +28,6 @@ var _ collection.List = (*SliceList)(nil)
 const (
 	// 默认列表容量
 	defaultCapacity = 10
-)
-
-var (
-	//NotFound        = errors.New("not found")
-	IndexOutOfBound = errors.New("index out of bound")
-	NoSuchElement   = errors.New("no such element")
-	IllegalState    = errors.New("illegal state")
 )
 
 // NewSliceListDefault 新增切片列表
@@ -66,6 +58,7 @@ func NewSliceList(initialCapacity int) *SliceList {
 }
 
 // SliceList 实现 collection.List 接口
+// 注意 SliceList 协程不安全,不能用于高并发.
 type SliceList struct {
 	size int                  // 列表大小
 	data []collection.Element // 数据
@@ -231,7 +224,7 @@ func (sliceList *SliceList) Equals(collection collection.Collection) (b bool) {
 // rangeCheckForAdd 检查新增操作索引范围
 func (sliceList *SliceList) rangeCheckForAdd(index int) error {
 	if index > sliceList.size || index < 0 {
-		return IndexOutOfBound
+		return errs.IndexOutOfBound
 	}
 	return nil
 }
@@ -259,7 +252,7 @@ func (sliceList *SliceList) AddAllIndex(index int, c collection.Collection) erro
 func (sliceList *SliceList) Get(index int) (e collection.Element, err error) {
 	size := sliceList.size
 	if index >= size || index < 0 {
-		err = IndexOutOfBound
+		err = errs.IndexOutOfBound
 	} else {
 		e = sliceList.data[index]
 	}
@@ -270,7 +263,7 @@ func (sliceList *SliceList) Get(index int) (e collection.Element, err error) {
 func (sliceList *SliceList) Set(index int, e collection.Element) (err error) {
 	size := sliceList.size
 	if index >= size {
-		err = IndexOutOfBound
+		err = errs.IndexOutOfBound
 	} else {
 		sliceList.data[index] = e
 	}
@@ -296,7 +289,7 @@ func (sliceList *SliceList) AddIndex(index int, e collection.Element) error {
 // 将所有后续元素向左移动(即将其索引中减去1),并返回从列表中删除的元素.
 func (sliceList *SliceList) RemoveIndex(index int) (collection.Element, error) {
 	if index >= sliceList.size {
-		return nil, IndexOutOfBound
+		return nil, errs.IndexOutOfBound
 	}
 	element := sliceList.data[index]
 	sliceList.data = append(sliceList.data[:index], sliceList.data[index+1:]...)

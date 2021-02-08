@@ -18,7 +18,7 @@
 package list
 
 import (
-	"github.com/chenquan/go-util/collection/api/collection"
+	"github.com/chenquan/go-util/backend/api/collection"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

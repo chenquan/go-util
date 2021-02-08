@@ -18,6 +18,15 @@
 // 错误处理包
 package errs
 
+import "errors"
+
+var (
+	//NotFound        = errors.New("not found")
+	IndexOutOfBound = errors.New("index out of bound")
+	NoSuchElement   = errors.New("no such element")
+	IllegalState    = errors.New("illegal state")
+)
+
 // indexOutOfBoundsException 实现 errs 接口
 type indexOutOfBoundsError struct {
 	str string
