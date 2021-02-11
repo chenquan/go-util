@@ -19,6 +19,7 @@ package list
 
 import (
 	"github.com/chenquan/go-util/backend/api/collection"
+	"github.com/chenquan/go-util/backend/errs"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -537,12 +538,12 @@ func TestSliceList_AddAllIndex(t *testing.T) {
 	assert.Equal(t, []collection.Element{"1", "1", 2, 3, 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
 
 	err = sliceList.AddAllIndex(-1, sliceList2)
-	assert.Equal(t, IndexOutOfBound, err)
+	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, 12, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "1", 2, 3, 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
 
 	err = sliceList.AddAllIndex(sliceList.size+1, sliceList2)
-	assert.Equal(t, IndexOutOfBound, err)
+	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, 12, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "1", 2, 3, 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
 
@@ -641,13 +642,13 @@ func TestSliceList_Set(t *testing.T) {
 		data: []collection.Element{"1", 2, 3},
 	}
 	var err error
-	err = sliceList.Set(0, "111")
+	_, err = sliceList.Set(0, "111")
 	assert.Equal(t, nil, err)
 	assert.Equal(t, []collection.Element{"111", 2, 3}, sliceList.data)
 	assert.Equal(t, 3, sliceList.size)
 
-	err = sliceList.Set(3, "111")
-	assert.Equal(t, IndexOutOfBound, err)
+	_, err = sliceList.Set(3, "111")
+	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, []collection.Element{"111", 2, 3}, sliceList.data)
 	assert.Equal(t, 3, sliceList.size)
 
@@ -655,8 +656,8 @@ func TestSliceList_Set(t *testing.T) {
 		size: 0,
 		data: []collection.Element{},
 	}
-	err = sliceList.Set(0, "1")
-	assert.Equal(t, IndexOutOfBound, err)
+	_, err = sliceList.Set(0, "1")
+	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, []collection.Element{}, sliceList.data)
 	assert.Equal(t, 0, sliceList.size)
 }
@@ -684,7 +685,7 @@ func TestSliceList_AddIndex(t *testing.T) {
 	assert.Equal(t, []collection.Element{1111, 1, "1111"}, sliceList.data)
 
 	err = sliceList.AddIndex(8, "1111")
-	assert.Equal(t, IndexOutOfBound, err)
+	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, 3, sliceList.size)
 	assert.Equal(t, []collection.Element{1111, 1, "1111"}, sliceList.data)
 

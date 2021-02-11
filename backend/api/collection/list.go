@@ -33,7 +33,7 @@ type List interface {
 	// Get 返回此列表中指定位置的元素
 	Get(index int) (Element, error)
 	// Set 用指定的元素替换此列表中指定位置的元素
-	Set(index int, e Element) error
+	Set(index int, e Element) (Element, error)
 	// AddIndex将指定的元素插入此列表中的指定位置(可选操作)
 	//
 	// 将当前在该位置的元素(如果有)和任何后续元素右移(即将其索引加一).

@@ -31,7 +31,7 @@ type node struct {
 
 // LinkedList
 type LinkedList struct {
-	len   int
+	size  int
 	first *node
 	last  *node
 }
@@ -40,6 +40,7 @@ func NewLinkedList() *LinkedList {
 	return &LinkedList{}
 }
 
+// AddFirst
 func (l *LinkedList) AddFirst(e collection.Element) error {
 	f := l.first
 	n := &node{
@@ -54,34 +55,17 @@ func (l *LinkedList) AddFirst(e collection.Element) error {
 	} else {
 		f.prev = n
 	}
-	l.len++
+	l.size++
 	return nil
 }
 
+// AddLast
 func (l *LinkedList) AddLast(e collection.Element) error {
-	last := l.last
-	n := &node{
-		elem: e,
-		next: last,
-		prev: nil,
-	}
-	if last == nil {
-		l.first = n
-	} else {
-		last.next = n
-	}
-	l.len++
+	l.linkLast(e)
 	return nil
 }
 
-//func (l *LinkedList) OfferFirst(e collection.Element) error {
-//	panic("implement me")
-//}
-//
-//func (l *LinkedList) OfferLast(e collection.Element) error {
-//	panic("implement me")
-//}
-
+// RemoveFirst
 func (l *LinkedList) RemoveFirst() (collection.Element, error) {
 	first := l.first
 	if first == nil {
@@ -96,10 +80,11 @@ func (l *LinkedList) RemoveFirst() (collection.Element, error) {
 		// 将头结点的前驱置为nil
 		l.first.prev = nil
 	}
-	l.len--
+	l.size--
 	return first.elem, nil
 }
 
+// RemoveLast
 func (l *LinkedList) RemoveLast() (collection.Element, error) {
 	last := l.last
 	if last == nil {
@@ -115,6 +100,7 @@ func (l *LinkedList) RemoveLast() (collection.Element, error) {
 	return last.elem, nil
 }
 
+// GetFirst
 func (l *LinkedList) GetFirst() (collection.Element, error) {
 	if l.first == nil {
 		return nil, errs.NoSuchElement
@@ -122,6 +108,7 @@ func (l *LinkedList) GetFirst() (collection.Element, error) {
 	return l.first.elem, nil
 }
 
+// GetLast
 func (l *LinkedList) GetLast() (collection.Element, error) {
 	if l.last == nil {
 		return nil, errs.NoSuchElement
@@ -133,6 +120,7 @@ func (l *LinkedList) RemoveFirstOccurrence(e collection.Element) (bool, error) {
 	return l.Remove(e)
 }
 
+// RemoveLastOccurrence
 func (l *LinkedList) RemoveLastOccurrence(e collection.Element) (bool, error) {
 	for x := l.last; x != nil; x = x.prev {
 		if x.elem == e {
@@ -142,6 +130,8 @@ func (l *LinkedList) RemoveLastOccurrence(e collection.Element) (bool, error) {
 	}
 	return false, nil
 }
+
+// unLink 移除节点
 func (l *LinkedList) unLink(x *node) collection.Element {
 	elem := x.elem
 	// 前驱结点
@@ -164,7 +154,7 @@ func (l *LinkedList) unLink(x *node) collection.Element {
 		x.next = nil
 	}
 	x.elem = nil
-	l.len--
+	l.size--
 	return elem
 
 }
@@ -193,31 +183,134 @@ func (l *LinkedList) AddAllIndex(index int, c collection.Collection) error {
 
 }
 func (l *LinkedList) isPositionIndex(index int) bool {
-	return index >= 0 && index <= l.len
+	return index >= 0 && index <= l.size
 }
 
+// checkElementIndex 检查索引
+func (l *LinkedList) checkElementIndex(index int) error {
+	if index >= 0 && index < l.size {
+		return nil
+	}
+	return errs.IndexOutOfBound
+}
+func (l *LinkedList) checkPositionIndex(index int) error {
+	if index >= 0 && index <= l.size {
+		return nil
+	}
+	return errs.IndexOutOfBound
+}
 func (l *LinkedList) Get(index int) (collection.Element, error) {
-	panic("implement me")
+	err := l.checkElementIndex(index)
+	if err != nil {
+		return nil, err
+	}
+	node := l.getNode(index)
+	return node.elem, nil
+
 }
 
-func (l *LinkedList) Set(index int, e collection.Element) error {
-	panic("implement me")
+// getNode 获取索引对应的节点
+func (l *LinkedList) getNode(index int) *node {
+	if index < (l.size >> 1) {
+		n := l.first
+		for i := 0; i < index; i++ {
+			n = n.next
+		}
+		return n
+	} else {
+		n := l.last
+		for i := l.size - 1; i > index; i-- {
+			n = n.prev
+		}
+		return n
+	}
+}
+
+func (l *LinkedList) Set(index int, e collection.Element) (collection.Element, error) {
+	err := l.checkElementIndex(index)
+	if err != nil {
+		return nil, err
+	}
+	n := l.getNode(index)
+	oldElement := n.elem
+	n.elem = e
+	return oldElement, nil
+
 }
 
 func (l *LinkedList) AddIndex(index int, e collection.Element) error {
-	panic("implement me")
+	err := l.checkPositionIndex(index)
+	if err != nil {
+		return err
+	}
+	if index == l.size {
+		return l.AddLast(e)
+	} else {
+		l.linkBefore(e, l.getNode(index))
+	}
+	return nil
+}
+
+func (l *LinkedList) linkBefore(e collection.Element, n *node) {
+	pred := n.prev
+	newNode := &node{
+		elem: e,
+		next: n,
+		prev: pred,
+	}
+	n.prev = newNode
+	if pred == nil {
+		l.first = newNode
+	} else {
+		pred.next = newNode
+	}
+	l.size++
+}
+
+func (l *LinkedList) linkLast(e collection.Element) {
+	last := l.last
+	n := &node{
+		elem: e,
+		next: nil,
+		prev: last,
+	}
+	l.last = n
+	if last == nil {
+		l.first = n
+	} else {
+		last.next = n
+	}
+	l.size++
 }
 
 func (l *LinkedList) RemoveIndex(index int) (collection.Element, error) {
-	panic("implement me")
+	if err := l.checkElementIndex(index); err != nil {
+		return nil, err
+	}
+	return l.unLink(l.getNode(index)), nil
 }
 
 func (l *LinkedList) Index(e collection.Element) int {
-	panic("implement me")
+	index := 0
+	for x := l.first; x != nil; x = x.next {
+		if x.elem == e {
+			return index
+		}
+		index++
+	}
+	return -1
 }
 
 func (l *LinkedList) LastIndex(e collection.Element) int {
-	panic("implement me")
+	index := l.size
+	for x := l.last; x != nil; x = x.prev {
+		index--
+		if x.elem == e {
+			return index
+		}
+	}
+	return -1
+
 }
 
 func (l *LinkedList) SubList(fromIndex, toIndex int) (collection.List, error) {
@@ -225,35 +318,85 @@ func (l *LinkedList) SubList(fromIndex, toIndex int) (collection.List, error) {
 }
 
 func (l *LinkedList) Size() int {
-	return l.len
+	return l.size
 }
 
 func (l *LinkedList) IsEmpty() bool {
-	return l.len == 0
+	return l.size == 0
 }
 
 func (l *LinkedList) Contains(e collection.Element) (bool, error) {
-	panic("implement me")
+	return l.Index(e) >= 0, nil
 }
 
 func (l *LinkedList) Add(e collection.Element) (bool, error) {
-	panic("implement me")
+	l.linkLast(e)
+	return true, nil
 }
 
 func (l *LinkedList) Remove(e collection.Element) (bool, error) {
-	panic("implement me")
+	for x := l.first; x != nil; x = x.next {
+		if x.elem == e {
+			l.unLink(x)
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 func (l *LinkedList) ContainsAll(collection collection.Collection) (bool, error) {
-	panic("implement me")
+	iterator := collection.Iterator()
+	for iterator.HasNext() {
+		next, err := iterator.Next()
+		if err != nil {
+			return false, err
+		}
+		contains, err := l.Contains(next)
+		if err != nil {
+			return false, err
+		}
+		if !contains {
+			return false, nil
+		}
+	}
+	return true, nil
 }
 
 func (l *LinkedList) AddAll(collection collection.Collection) (bool, error) {
-	panic("implement me")
+	modified := false
+	elements := collection.Slice()
+	for _, element := range elements {
+		if add, err := l.Add(element); err == nil {
+			if add {
+				modified = true
+			}
+		} else {
+			return false, err
+		}
+
+	}
+	return modified, nil
 }
 
 func (l *LinkedList) RemoveAll(collection collection.Collection) (bool, error) {
-	panic("implement me")
+
+	iterator := l.Iterator()
+	for iterator.HasNext() {
+		if next, err := iterator.Next(); err != nil {
+			return false, err
+		} else {
+			if contains, err1 := collection.Contains(next); err1 != nil {
+				if contains {
+					err2 := iterator.Remove()
+					if err2 != nil {
+						return false, err2
+					}
+				}
+			}
+		}
+
+	}
+	return true, nil
 }
 
 func (l *LinkedList) RetainAll(collection collection.Collection) (bool, error) {

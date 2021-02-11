@@ -260,12 +260,13 @@ func (sliceList *SliceList) Get(index int) (e collection.Element, err error) {
 }
 
 // Set 用指定的元素替换此列表中指定位置的元素
-func (sliceList *SliceList) Set(index int, e collection.Element) (err error) {
+func (sliceList *SliceList) Set(index int, e collection.Element) (elem collection.Element, err error) {
 	size := sliceList.size
 	if index >= size {
 		err = errs.IndexOutOfBound
 	} else {
 		sliceList.data[index] = e
+		elem = e
 	}
 	return
 }
