@@ -18,8 +18,8 @@
 package list
 
 import (
-	"github.com/chenquan/go-util/backend/api/collection"
-	"github.com/chenquan/go-util/backend/errs"
+	"github.com/chenquan/go-util/backend/collection"
+	"github.com/chenquan/go-util/errs"
 )
 
 // node 链表节点
@@ -170,17 +170,26 @@ func (l *LinkedList) DescendingIterator() collection.Iterator {
 	panic("implement me")
 }
 
-func (l *LinkedList) AddAllIndex(index int, c collection.Collection) error {
+func (l *LinkedList) AddAllIndex(index int, c collection.Collection) (bool, error) {
 	if !l.isPositionIndex(index) {
-		return errs.IndexOutOfBound
+		return false, errs.IndexOutOfBound
 	}
 	slice := c.Slice()
 	numNew := len(slice)
 	if numNew == 0 {
-		return nil
+		return false, nil
 	}
-	return nil
 
+	if index == l.size {
+		for _, element := range slice {
+			_ = l.AddLast(element)
+		}
+	} else {
+		for _, element := range slice {
+			l.linkBefore(element, l.getNode(index))
+		}
+	}
+	return true, nil
 }
 func (l *LinkedList) isPositionIndex(index int) bool {
 	return index >= 0 && index <= l.size
@@ -204,8 +213,8 @@ func (l *LinkedList) Get(index int) (collection.Element, error) {
 	if err != nil {
 		return nil, err
 	}
-	node := l.getNode(index)
-	return node.elem, nil
+	n := l.getNode(index)
+	return n.elem, nil
 
 }
 
@@ -366,27 +375,42 @@ func (l *LinkedList) AddAll(collection collection.Collection) (bool, error) {
 	modified := false
 	elements := collection.Slice()
 	for _, element := range elements {
-		if add, err := l.Add(element); err == nil {
-			if add {
-				modified = true
-			}
-		} else {
-			return false, err
+		if add, _ := l.Add(element); add {
+			modified = true
 		}
-
 	}
 	return modified, nil
 }
 
-func (l *LinkedList) RemoveAll(collection collection.Collection) (bool, error) {
+func (l *LinkedList) RemoveAll(c collection.Collection) (bool, error) {
 
+	//iterator := l.Iterator()
+	//for iterator.HasNext() {
+	//	if next, err := iterator.Next(); err != nil {
+	//		return false, err
+	//	} else {
+	//		if contains, err1 := collection.Contains(next); err1 != nil {
+	//			if contains {
+	//				err2 := iterator.Remove()
+	//				if err2 != nil {
+	//					return false, err2
+	//				}
+	//			}
+	//		}
+	//	}
+	//
+	//}
+	//return true, nil
+	return l.batchRemove(c, false)
+}
+func (l *LinkedList) batchRemove(c collection.Collection, complement bool) (bool, error) {
 	iterator := l.Iterator()
 	for iterator.HasNext() {
 		if next, err := iterator.Next(); err != nil {
 			return false, err
 		} else {
-			if contains, err1 := collection.Contains(next); err1 != nil {
-				if contains {
+			if contains, err1 := c.Contains(next); err1 != nil {
+				if contains == complement {
 					err2 := iterator.Remove()
 					if err2 != nil {
 						return false, err2
@@ -398,39 +422,83 @@ func (l *LinkedList) RemoveAll(collection collection.Collection) (bool, error) {
 	}
 	return true, nil
 }
-
-func (l *LinkedList) RetainAll(collection collection.Collection) (bool, error) {
-	panic("implement me")
+func (l *LinkedList) RetainAll(c collection.Collection) (bool, error) {
+	return l.batchRemove(c, true)
 }
 
 func (l *LinkedList) Clear() error {
-	panic("implement me")
+
+	for n := l.last; n != nil; {
+		next := n.next
+		n.elem = nil
+		n.prev = nil
+		n.next = nil
+		n = next
+	}
+	l.last = nil
+	l.first = nil
+	l.size = 0
+	return nil
 }
 
-func (l *LinkedList) Equals(collection collection.Collection) bool {
-	panic("implement me")
+func (l *LinkedList) Equals(c collection.Collection) bool {
+	if l == c {
+		return true
+	}
+	if l.size != c.Size() {
+		return false
+	}
+	i1 := l.Iterator()
+	i2 := c.Iterator()
+	for i1.HasNext() && i2.HasNext() {
+		e1, err1 := i1.Next()
+		if err1 != nil {
+			return false
+		}
+		e2, err2 := i2.Next()
+		if err2 != nil {
+			return false
+		}
+		if e1 != e2 {
+			return false
+		}
+	}
+	return true
 }
 
 func (l *LinkedList) Slice() []collection.Element {
-	panic("implement me")
+	elements := make([]collection.Element, 0, l.size)
+	for x := l.first; x != nil; x = x.next {
+		elements = append(elements, x.elem)
+	}
+	return elements
 }
 
 func (l *LinkedList) Iterator() collection.Iterator {
-	panic("implement me")
+	return &itrList{cursor: 0, lastRet: -1, data: l}
 }
 
-func (l *LinkedList) Offer(e collection.Element) error {
-	panic("implement me")
+func (l *LinkedList) Offer(e collection.Element) (bool, error) {
+	return l.Add(e)
 }
 
-func (l *LinkedList) Poll() (collection.Element, error) {
-	panic("implement me")
+func (l *LinkedList) Poll() collection.Element {
+	first := l.first
+	if first == nil {
+		return nil
+	}
+	l.unLink(first)
+	return first.elem
 }
 
 func (l *LinkedList) Element() (collection.Element, error) {
-	panic("implement me")
+	return l.GetFirst()
 }
 
 func (l *LinkedList) Peek() collection.Element {
-	panic("implement me")
+	first := l.first
+	if first == nil {
+		return nil
+	}
+	return first.elem
 }

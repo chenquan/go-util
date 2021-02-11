@@ -18,8 +18,8 @@
 package _map
 
 import (
-	"github.com/chenquan/go-util/backend/api/collection"
-	"github.com/chenquan/go-util/backend/function"
+	"github.com/chenquan/go-util/backend/collection"
+	"github.com/chenquan/go-util/function"
 )
 
 type key interface{}

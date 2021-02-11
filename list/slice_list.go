@@ -19,8 +19,8 @@ package list
 
 import (
 	"fmt"
-	"github.com/chenquan/go-util/backend/api/collection"
-	"github.com/chenquan/go-util/backend/errs"
+	"github.com/chenquan/go-util/backend/collection"
+	"github.com/chenquan/go-util/errs"
 )
 
 var _ collection.List = (*SliceList)(nil)
@@ -201,13 +201,16 @@ func (sliceList *SliceList) Clear() error {
 }
 
 // Equals 比较指定对象与此集合的相等性
-func (sliceList *SliceList) Equals(collection collection.Collection) (b bool) {
+func (sliceList *SliceList) Equals(c collection.Collection) (b bool) {
 
-	if sliceList == collection {
+	if sliceList == c {
 		return true
 	}
+	if sliceList.size != c.Size() {
+		return false
+	}
 	iterator1 := sliceList.Iterator()
-	iterator2 := collection.Iterator()
+	iterator2 := c.Iterator()
 	for iterator1.HasNext() && iterator2.HasNext() {
 		e1, _ := iterator1.Next()
 
@@ -234,9 +237,9 @@ func (sliceList *SliceList) rangeCheckForAdd(index int) error {
 // 将当前在该位置的元素（如果有）和任何后续元素右移(增加其索引)
 // 新元素将按照指定集合的迭代器返回的顺序显示在此列表中,
 // 如果在操作进行过程中修改了指定的集合,则此操作的行为是不确定的.
-func (sliceList *SliceList) AddAllIndex(index int, c collection.Collection) error {
+func (sliceList *SliceList) AddAllIndex(index int, c collection.Collection) (bool, error) {
 	if err := sliceList.rangeCheckForAdd(index); err != nil {
-		return err
+		return false, err
 	}
 	slice := c.Slice()
 	if c.Size() != 0 {
@@ -244,8 +247,10 @@ func (sliceList *SliceList) AddAllIndex(index int, c collection.Collection) erro
 		copy(sliceList.data[index+c.Size():], sliceList.data[index:])
 		copy(sliceList.data[index:], slice)
 		sliceList.size += c.Size()
+		return true, nil
+
 	}
-	return nil
+	return true, nil
 }
 
 // Get 返回此列表中指定位置的元素
@@ -354,8 +359,8 @@ func (sliceList *SliceList) SubList(fromIndex, toIndex int) (collection.List, er
 // 如果当前集合是有序的,则保证返回的迭代器是有序的.
 func (sliceList *SliceList) Iterator() collection.Iterator {
 	return &itrList{
-		lastRet: -1,
 		cursor:  0,
+		lastRet: -1,
 		data:    sliceList,
 	}
 }

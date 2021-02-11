@@ -18,8 +18,8 @@
 package list
 
 import (
-	"github.com/chenquan/go-util/backend/api/collection"
-	"github.com/chenquan/go-util/backend/errs"
+	"github.com/chenquan/go-util/backend/collection"
+	"github.com/chenquan/go-util/errs"
 )
 
 // itrList 实现 collection.Iterator 接口

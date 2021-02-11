@@ -20,8 +20,8 @@ package collection
 // Queue 队列接口
 type Queue interface {
 	Collection
-	Offer(e Element) error
-	Poll() (Element, error)
+	Offer(e Element) (bool, error)
+	Poll() Element
 	Element() (Element, error)
 	Peek() Element
 }

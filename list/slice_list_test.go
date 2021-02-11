@@ -18,8 +18,8 @@
 package list
 
 import (
-	"github.com/chenquan/go-util/backend/api/collection"
-	"github.com/chenquan/go-util/backend/errs"
+	"github.com/chenquan/go-util/backend/collection"
+	"github.com/chenquan/go-util/errs"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -522,27 +522,27 @@ func TestSliceList_AddAllIndex(t *testing.T) {
 		data: []collection.Element{"1", 2, 3},
 	}
 	var err error
-	err = sliceList.AddAllIndex(0, sliceList2)
+	_, err = sliceList.AddAllIndex(0, sliceList2)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 6, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", 2, 3, "1", 2, 3}, sliceList.data)
 
-	err = sliceList.AddAllIndex(sliceList.size, sliceList2)
+	_, err = sliceList.AddAllIndex(sliceList.size, sliceList2)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 9, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
 
-	err = sliceList.AddAllIndex(1, sliceList2)
+	_, err = sliceList.AddAllIndex(1, sliceList2)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 12, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "1", 2, 3, 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
 
-	err = sliceList.AddAllIndex(-1, sliceList2)
+	_, err = sliceList.AddAllIndex(-1, sliceList2)
 	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, 12, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "1", 2, 3, 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
 
-	err = sliceList.AddAllIndex(sliceList.size+1, sliceList2)
+	_, err = sliceList.AddAllIndex(sliceList.size+1, sliceList2)
 	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, 12, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "1", 2, 3, 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
@@ -551,7 +551,7 @@ func TestSliceList_AddAllIndex(t *testing.T) {
 		size: 0,
 		data: []collection.Element{},
 	}
-	err = sliceList.AddAllIndex(0, sliceList2)
+	_, err = sliceList.AddAllIndex(0, sliceList2)
 	assert.Equal(t, nil, err)
 
 }

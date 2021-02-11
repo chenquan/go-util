@@ -18,8 +18,8 @@
 package list
 
 import (
-	"github.com/chenquan/go-util/backend/api/collection"
-	"github.com/chenquan/go-util/backend/errs"
+	"github.com/chenquan/go-util/backend/collection"
+	"github.com/chenquan/go-util/errs"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

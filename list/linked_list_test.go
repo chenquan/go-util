@@ -18,7 +18,8 @@
 package list
 
 import (
-	"github.com/chenquan/go-util/backend/api/collection"
+	"github.com/chenquan/go-util/backend/collection"
+	"github.com/chenquan/go-util/errs"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -78,35 +79,52 @@ func TestLinkedList_AddAll(t *testing.T) {
 }
 
 func TestLinkedList_AddAllIndex(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
+	list := &LinkedList{}
+	sliceList := &SliceList{
+		size: 2,
+		data: []collection.Element{1, "2"},
 	}
-	type args struct {
-		index int
-		c     collection.Collection
+	var (
+		isAdd bool
+		err   error
+	)
+
+	isAdd, err = list.AddAllIndex(0, sliceList)
+	assert.Equal(t, true, isAdd)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, 1, list.first.elem)
+	assert.Equal(t, "2", list.first.next.elem)
+	assert.Equal(t, (*node)(nil), list.first.next.next)
+
+	isAdd, err = list.AddAllIndex(-1, sliceList)
+	assert.Equal(t, false, isAdd)
+	assert.Equal(t, errs.IndexOutOfBound, err)
+	assert.Equal(t, 1, list.first.elem)
+	assert.Equal(t, "2", list.first.next.elem)
+	assert.Equal(t, (*node)(nil), list.first.next.next)
+
+	sliceList1 := &SliceList{
+		size: 0,
+		data: []collection.Element{},
 	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
+	isAdd, err = list.AddAllIndex(1, sliceList1)
+	assert.Equal(t, false, isAdd)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, 1, list.first.elem)
+	assert.Equal(t, "2", list.first.next.elem)
+	assert.Equal(t, (*node)(nil), list.first.next.next)
+
+	sliceList2 := &SliceList{
+		size: 0,
+		data: []collection.Element{},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			if err := l.AddAllIndex(tt.args.index, tt.args.c); (err != nil) != tt.wantErr {
-				t.Errorf("AddAllIndex() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+	isAdd, err = list.AddAllIndex(1, sliceList2)
+	assert.Equal(t, false, isAdd)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, 1, list.first.elem)
+	assert.Equal(t, "2", list.first.next.elem)
+	assert.Equal(t, (*node)(nil), list.first.next.next)
+
 }
 
 func TestLinkedList_AddFirst(t *testing.T) {
@@ -615,34 +633,7 @@ func TestLinkedList_LastIndex(t *testing.T) {
 }
 
 func TestLinkedList_Offer(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	type args struct {
-		e collection.Element
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			if err := l.Offer(tt.args.e); (err != nil) != tt.wantErr {
-				t.Errorf("Offer() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+
 }
 
 func TestLinkedList_Peek(t *testing.T) {
@@ -673,36 +664,7 @@ func TestLinkedList_Peek(t *testing.T) {
 }
 
 func TestLinkedList_Poll(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		want    collection.Element
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			got, err := l.Poll()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Poll() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Poll() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+
 }
 
 func TestLinkedList_Pop(t *testing.T) {

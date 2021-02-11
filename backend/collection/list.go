@@ -29,7 +29,7 @@ type List interface {
 	// 将当前在该位置的元素（如果有）和任何后续元素右移(增加其索引)
 	// 新元素将按照指定集合的迭代器返回的顺序显示在此列表中,
 	// 如果在操作进行过程中修改了指定的集合,则此操作的行为是不确定的.
-	AddAllIndex(index int, c Collection) error
+	AddAllIndex(index int, c Collection) (bool, error)
 	// Get 返回此列表中指定位置的元素
 	Get(index int) (Element, error)
 	// Set 用指定的元素替换此列表中指定位置的元素
