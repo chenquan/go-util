@@ -380,17 +380,22 @@ func (l *LinkedList) AddAll(collection collection.Collection) (bool, error) {
 }
 
 func (l *LinkedList) RemoveAll(c collection.Collection) (bool, error) {
-	return l.batchRemove(c, false)
+	return l.batchRemove(c, true)
 }
 func (l *LinkedList) batchRemove(c collection.Collection, complement bool) (bool, error) {
 	iterator := l.Iterator()
+	modified := false
+
 	for iterator.HasNext() {
 		if next, err := iterator.Next(); err != nil {
 			return false, err
 		} else {
 			if contains, err1 := c.Contains(next); err1 != nil {
+				return false, err1
+			} else {
 				if contains == complement {
 					err2 := iterator.Remove()
+					modified = true
 					if err2 != nil {
 						return false, err2
 					}
@@ -399,7 +404,7 @@ func (l *LinkedList) batchRemove(c collection.Collection, complement bool) (bool
 		}
 
 	}
-	return true, nil
+	return modified, nil
 }
 func (l *LinkedList) RetainAll(c collection.Collection) (bool, error) {
 	return l.batchRemove(c, true)
@@ -460,8 +465,9 @@ func (l *LinkedList) Poll() collection.Element {
 	if first == nil {
 		return nil
 	}
+	elem := first.elem
 	l.unLink(first)
-	return first.elem
+	return elem
 }
 
 func (l *LinkedList) Element() (collection.Element, error) {
