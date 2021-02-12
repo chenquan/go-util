@@ -454,6 +454,11 @@ func TestLinkedList_LastIndex(t *testing.T) {
 	list = genLinkedList([]collection.Element{"1", 2, 3}...)
 	index = list.LastIndex(3)
 	assert.Equal(t, 2, index)
+
+	list = genLinkedList([]collection.Element{"1", 2, 3}...)
+	index = list.LastIndex("1")
+	assert.Equal(t, 0, index)
+
 }
 
 func TestLinkedList_Offer(t *testing.T) {

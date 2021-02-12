@@ -318,7 +318,6 @@ func (l *LinkedList) LastIndex(e collection.Element) int {
 		index--
 	}
 	return -1
-
 }
 
 func (l *LinkedList) SubList(fromIndex, toIndex int) (collection.List, error) {
