@@ -179,16 +179,41 @@ func (l *LinkedList) AddAllIndex(index int, c collection.Collection) (bool, erro
 	if numNew == 0 {
 		return false, nil
 	}
+	var (
+		prev *node
+		p    *node
+	)
 
-	if index == l.size {
-		for _, element := range slice {
-			_ = l.AddLast(element)
-		}
+	if l.size == index {
+		p = nil
+		prev = l.last
 	} else {
-		for _, element := range slice {
-			l.linkBefore(element, l.getNode(index))
-		}
+		p = l.getNode(index)
+		prev = p.prev
 	}
+
+	for _, element := range slice {
+		n := &node{
+			elem: element,
+			next: nil,
+			prev: prev,
+		}
+		if prev == nil {
+			l.first = n
+		} else {
+			// 反向关联
+			prev.next = n
+		}
+		prev = n
+	}
+
+	if p == nil {
+		l.last = prev
+	} else {
+		prev.next = p
+		p.prev = prev
+	}
+	l.size += numNew
 	return true, nil
 }
 func (l *LinkedList) isPositionIndex(index int) bool {
@@ -260,17 +285,17 @@ func (l *LinkedList) AddIndex(index int, e collection.Element) error {
 }
 
 func (l *LinkedList) linkBefore(e collection.Element, n *node) {
-	pred := n.prev
+	prev := n.prev
 	newNode := &node{
 		elem: e,
 		next: n,
-		prev: pred,
+		prev: prev,
 	}
 	n.prev = newNode
-	if pred == nil {
+	if prev == nil {
 		l.first = newNode
 	} else {
-		pred.next = newNode
+		prev.next = newNode
 	}
 	l.size++
 }
@@ -384,7 +409,6 @@ func (l *LinkedList) RemoveAll(c collection.Collection) (bool, error) {
 func (l *LinkedList) batchRemove(c collection.Collection, complement bool) (bool, error) {
 	iterator := l.Iterator()
 	modified := false
-
 	for iterator.HasNext() {
 		if next, err := iterator.Next(); err != nil {
 			return false, err
@@ -410,7 +434,6 @@ func (l *LinkedList) RetainAll(c collection.Collection) (bool, error) {
 }
 
 func (l *LinkedList) Clear() error {
-
 	for n := l.last; n != nil; {
 		next := n.next
 		n.elem = nil
