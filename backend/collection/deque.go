@@ -23,8 +23,6 @@ type DeQue interface {
 	Queue
 	AddFirst(e Element) error
 	AddLast(e Element) error
-	//OfferFirst(e Element) error
-	//OfferLast(e Element) error
 	RemoveFirst() (Element, error)
 	RemoveLast() (Element, error)
 	GetFirst() (Element, error)

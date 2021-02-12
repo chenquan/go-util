@@ -29,13 +29,16 @@ type node struct {
 	prev *node              // 上一个节点
 }
 
-// LinkedList
+// LinkedList List和Deque接口的双链接列表实现
+//
+// 实现所有可选的列表操作，并允许存储所有元素(包括nil).
 type LinkedList struct {
 	size  int
 	first *node
 	last  *node
 }
 
+// NewLinkedList 新建链表
 func NewLinkedList() *LinkedList {
 	return &LinkedList{}
 }
@@ -502,4 +505,7 @@ func (l *LinkedList) Peek() collection.Element {
 		return nil
 	}
 	return first.elem
+}
+func (l *LinkedList) Delete() (collection.Element, error) {
+	return l.RemoveFirst()
 }

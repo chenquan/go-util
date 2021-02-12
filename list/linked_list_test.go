@@ -889,15 +889,31 @@ func TestLinkedList_isPositionIndex(t *testing.T) {
 
 }
 
-func TestLinkedList_linkBefore(t *testing.T) {
+func TestLinkedList_Delete(t *testing.T) {
+	list := genLinkedList([]collection.Element{"1", 2, 3}...)
+	var (
+		first collection.Element
+		err   error
+	)
+	first, err = list.Delete()
+	assert.Equal(t, "1", first)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []collection.Element{2, 3}, linkedToSlice(list))
 
-}
+	first, err = list.Delete()
+	assert.Equal(t, 2, first)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []collection.Element{3}, linkedToSlice(list))
 
-func TestLinkedList_linkLast(t *testing.T) {
+	first, err = list.Delete()
+	assert.Equal(t, 3, first)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []collection.Element{}, linkedToSlice(list))
 
-}
-
-func TestLinkedList_unLink(t *testing.T) {
+	first, err = list.Delete()
+	assert.Equal(t, nil, first)
+	assert.Equal(t, errs.NoSuchElement, err)
+	assert.Equal(t, []collection.Element{}, linkedToSlice(list))
 
 }
 
