@@ -147,7 +147,7 @@ func (l *LinkedList) unLink(x *node) collection.Element {
 		x.prev = nil
 	}
 	if next == nil {
-		l.last = nil
+		l.last = prev
 	} else {
 		next.prev = prev
 		// 断开
@@ -407,7 +407,7 @@ func (l *LinkedList) batchRemove(c collection.Collection, complement bool) (bool
 	return modified, nil
 }
 func (l *LinkedList) RetainAll(c collection.Collection) (bool, error) {
-	return l.batchRemove(c, true)
+	return l.batchRemove(c, false)
 }
 
 func (l *LinkedList) Clear() error {

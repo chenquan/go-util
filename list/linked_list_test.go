@@ -685,73 +685,61 @@ func TestLinkedList_RemoveFirstOccurrence(t *testing.T) {
 }
 
 func TestLinkedList_RemoveIndex(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	type args struct {
-		index int
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    collection.Element
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			got, err := l.RemoveIndex(tt.args.index)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("RemoveIndex() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RemoveIndex() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	list := genLinkedList([]collection.Element{"1", 2, 3}...)
+	var (
+		e   collection.Element
+		err error
+	)
+
+	e, err = list.RemoveIndex(0)
+	assert.Equal(t, "1", e)
+	assert.Equal(t, nil, err)
+
+	e, err = list.RemoveIndex(1)
+	assert.Equal(t, 3, e)
+	assert.Equal(t, nil, err)
+
+	e, err = list.RemoveIndex(0)
+	assert.Equal(t, 2, e)
+	assert.Equal(t, nil, err)
+
+	e, err = list.RemoveIndex(0)
+	assert.Equal(t, nil, e)
+	assert.Equal(t, errs.IndexOutOfBound, err)
+
+	e, err = list.RemoveIndex(-1)
+	assert.Equal(t, nil, e)
+	assert.Equal(t, errs.IndexOutOfBound, err)
+
+	e, err = list.RemoveIndex(1)
+	assert.Equal(t, nil, e)
+	assert.Equal(t, errs.IndexOutOfBound, err)
+
 }
 
 func TestLinkedList_RemoveLast(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		want    collection.Element
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			got, err := l.RemoveLast()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("RemoveLast() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("RemoveLast() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	list := genLinkedList([]collection.Element{"1", 2, 3}...)
+	var (
+		e   collection.Element
+		err error
+	)
+
+	e, err = list.RemoveLast()
+	assert.Equal(t, 3, e)
+	assert.Equal(t, nil, err)
+
+	e, err = list.RemoveLast()
+	assert.Equal(t, 2, e)
+	assert.Equal(t, nil, err)
+
+	e, err = list.RemoveLast()
+	assert.Equal(t, "1", e)
+	assert.Equal(t, nil, err)
+
+	e, err = list.RemoveLast()
+	assert.Equal(t, nil, e)
+	assert.Equal(t, errs.NoSuchElement, err)
+
 }
 
 func TestLinkedList_RemoveLastOccurrence(t *testing.T) {
@@ -792,294 +780,143 @@ func TestLinkedList_RemoveLastOccurrence(t *testing.T) {
 }
 
 func TestLinkedList_RetainAll(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	type args struct {
-		collection collection.Collection
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    bool
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			got, err := l.RetainAll(tt.args.collection)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("RetainAll() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("RetainAll() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	list := genLinkedList([]collection.Element{"1", 2, 3}...)
+	var (
+		b   bool
+		err error
+	)
+
+	b, err = list.RetainAll(list)
+	assert.Equal(t, false, b)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []collection.Element{"1", 2, 3}, linkedToSlice(list))
+
+	list1 := genLinkedList([]collection.Element{"1", 2}...)
+	b, err = list.RetainAll(list1)
+	assert.Equal(t, true, b)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []collection.Element{"1", 2}, linkedToSlice(list))
+
 }
 
 func TestLinkedList_Set(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	type args struct {
-		index int
-		e     collection.Element
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    collection.Element
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			got, err := l.Set(tt.args.index, tt.args.e)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Set() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Set() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	list := genLinkedList([]collection.Element{"1", 2, 3}...)
+	var (
+		e   collection.Element
+		err error
+	)
+
+	e, err = list.Set(0, 1)
+	assert.Equal(t, "1", e)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []collection.Element{1, 2, 3}, linkedToSlice(list))
+
+	e, err = list.Set(1, "2222")
+	assert.Equal(t, 2, e)
+	assert.Equal(t, nil, err)
+	assert.Equal(t, []collection.Element{1, "2222", 3}, linkedToSlice(list))
+
+	e, err = list.Set(-1, "2")
+	assert.Equal(t, nil, e)
+	assert.Equal(t, errs.IndexOutOfBound, err)
+	assert.Equal(t, []collection.Element{1, "2222", 3}, linkedToSlice(list))
+
+	e, err = list.Set(list.size, "2")
+	assert.Equal(t, nil, e)
+	assert.Equal(t, errs.IndexOutOfBound, err)
+	assert.Equal(t, []collection.Element{1, "2222", 3}, linkedToSlice(list))
+
 }
 
 func TestLinkedList_Size(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   int
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			if got := l.Size(); got != tt.want {
-				t.Errorf("Size() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	list := genLinkedList([]collection.Element{"1", 2, 3}...)
+	assert.Equal(t, 3, list.Size())
 }
 
 func TestLinkedList_Slice(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   []collection.Element
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			if got := l.Slice(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Slice() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	list := genLinkedList([]collection.Element{"1", 2, 3}...)
+	elements := list.Slice()
+	assert.Equal(t, []collection.Element{"1", 2, 3}, elements)
+
 }
 
 func TestLinkedList_SubList(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	type args struct {
-		fromIndex int
-		toIndex   int
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    collection.List
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			got, err := l.SubList(tt.args.fromIndex, tt.args.toIndex)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("SubList() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("SubList() got = %v, want %v", got, tt.want)
-			}
-		})
-	}
+
 }
 
 func TestLinkedList_checkElementIndex(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	type args struct {
-		index int
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			if err := l.checkElementIndex(tt.args.index); (err != nil) != tt.wantErr {
-				t.Errorf("checkElementIndex() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+	var err error
+	list := genLinkedList([]collection.Element{"1", 2, 3}...)
+	err = list.checkElementIndex(0)
+	assert.Equal(t, nil, err)
+
+	err = list.checkElementIndex(2)
+	assert.Equal(t, nil, err)
+
+	err = list.checkElementIndex(-1)
+	assert.Equal(t, errs.IndexOutOfBound, err)
+
+	err = list.checkElementIndex(3)
+	assert.Equal(t, errs.IndexOutOfBound, err)
+
+	err = list.checkElementIndex(4)
+	assert.Equal(t, errs.IndexOutOfBound, err)
+
 }
 
 func TestLinkedList_checkPositionIndex(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	type args struct {
-		index int
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			if err := l.checkPositionIndex(tt.args.index); (err != nil) != tt.wantErr {
-				t.Errorf("checkPositionIndex() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
+	var err error
+	list := genLinkedList([]collection.Element{"1", 2, 3}...)
+	err = list.checkPositionIndex(0)
+	assert.Equal(t, nil, err)
+
+	err = list.checkPositionIndex(3)
+	assert.Equal(t, nil, err)
+
+	err = list.checkPositionIndex(4)
+	assert.Equal(t, errs.IndexOutOfBound, err)
+
+	err = list.checkPositionIndex(-1)
+	assert.Equal(t, errs.IndexOutOfBound, err)
+
 }
 
 func TestLinkedList_getNode(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	type args struct {
-		index int
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   *node
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			if got := l.getNode(tt.args.index); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("getNode() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	list := genLinkedList([]collection.Element{"1", 2, 3}...)
+	var n *node
+	n = list.getNode(0)
+	assert.Equal(t, list.first, n)
+
+	n = list.getNode(1)
+	assert.Equal(t, list.first.next, n)
+
+	n = list.getNode(2)
+	assert.Equal(t, list.first.next.next, n)
+
 }
 
 func TestLinkedList_isPositionIndex(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	type args struct {
-		index int
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			if got := l.isPositionIndex(tt.args.index); got != tt.want {
-				t.Errorf("isPositionIndex() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+	list := genLinkedList([]collection.Element{"1", 2, 3}...)
+	var b bool
+
+	b = list.isPositionIndex(0)
+	assert.Equal(t, true, b)
+
+	b = list.isPositionIndex(1)
+	assert.Equal(t, true, b)
+
+	b = list.isPositionIndex(2)
+	assert.Equal(t, true, b)
+
+	b = list.isPositionIndex(-1)
+	assert.Equal(t, false, b)
+
+	b = list.isPositionIndex(3)
+	assert.Equal(t, true, b)
+
+	b = list.isPositionIndex(4)
+	assert.Equal(t, false, b)
+
 }
 
 func TestLinkedList_linkBefore(t *testing.T) {
@@ -1087,57 +924,11 @@ func TestLinkedList_linkBefore(t *testing.T) {
 }
 
 func TestLinkedList_linkLast(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	type args struct {
-		e collection.Element
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
 
-		})
-	}
 }
 
 func TestLinkedList_unLink(t *testing.T) {
-	type fields struct {
-		size  int
-		first *node
-		last  *node
-	}
-	type args struct {
-		x *node
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   collection.Element
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			l := &LinkedList{
-				size:  tt.fields.size,
-				first: tt.fields.first,
-				last:  tt.fields.last,
-			}
-			if got := l.unLink(tt.args.x); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("unLink() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+
 }
 
 // Benchmark
