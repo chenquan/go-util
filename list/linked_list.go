@@ -254,9 +254,8 @@ func (l *LinkedList) AddIndex(index int, e collection.Element) error {
 	}
 	if index == l.size {
 		return l.AddLast(e)
-	} else {
-		l.linkBefore(e, l.getNode(index))
 	}
+	l.linkBefore(e, l.getNode(index))
 	return nil
 }
 
@@ -311,12 +310,12 @@ func (l *LinkedList) Index(e collection.Element) int {
 }
 
 func (l *LinkedList) LastIndex(e collection.Element) int {
-	index := l.size
+	index := l.size - 1
 	for x := l.last; x != nil; x = x.prev {
-		index--
 		if x.elem == e {
 			return index
 		}
+		index--
 	}
 	return -1
 
@@ -353,17 +352,15 @@ func (l *LinkedList) Remove(e collection.Element) (bool, error) {
 	return false, nil
 }
 
-func (l *LinkedList) ContainsAll(collection collection.Collection) (bool, error) {
-	iterator := collection.Iterator()
+func (l *LinkedList) ContainsAll(c collection.Collection) (bool, error) {
+	iterator := c.Iterator()
+	var (
+		next     collection.Element
+		contains bool
+	)
 	for iterator.HasNext() {
-		next, err := iterator.Next()
-		if err != nil {
-			return false, err
-		}
-		contains, err := l.Contains(next)
-		if err != nil {
-			return false, err
-		}
+		next, _ = iterator.Next()
+		contains, _ = l.Contains(next)
 		if !contains {
 			return false, nil
 		}
@@ -383,24 +380,6 @@ func (l *LinkedList) AddAll(collection collection.Collection) (bool, error) {
 }
 
 func (l *LinkedList) RemoveAll(c collection.Collection) (bool, error) {
-
-	//iterator := l.Iterator()
-	//for iterator.HasNext() {
-	//	if next, err := iterator.Next(); err != nil {
-	//		return false, err
-	//	} else {
-	//		if contains, err1 := collection.Contains(next); err1 != nil {
-	//			if contains {
-	//				err2 := iterator.Remove()
-	//				if err2 != nil {
-	//					return false, err2
-	//				}
-	//			}
-	//		}
-	//	}
-	//
-	//}
-	//return true, nil
 	return l.batchRemove(c, false)
 }
 func (l *LinkedList) batchRemove(c collection.Collection, complement bool) (bool, error) {
@@ -451,14 +430,8 @@ func (l *LinkedList) Equals(c collection.Collection) bool {
 	i1 := l.Iterator()
 	i2 := c.Iterator()
 	for i1.HasNext() && i2.HasNext() {
-		e1, err1 := i1.Next()
-		if err1 != nil {
-			return false
-		}
-		e2, err2 := i2.Next()
-		if err2 != nil {
-			return false
-		}
+		e1, _ := i1.Next()
+		e2, _ := i2.Next()
 		if e1 != e2 {
 			return false
 		}

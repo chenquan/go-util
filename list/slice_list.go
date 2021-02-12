@@ -250,7 +250,7 @@ func (sliceList *SliceList) AddAllIndex(index int, c collection.Collection) (boo
 		return true, nil
 
 	}
-	return true, nil
+	return false, nil
 }
 
 // Get 返回此列表中指定位置的元素

@@ -521,38 +521,47 @@ func TestSliceList_AddAllIndex(t *testing.T) {
 		size: 3,
 		data: []collection.Element{"1", 2, 3},
 	}
-	var err error
-	_, err = sliceList.AddAllIndex(0, sliceList2)
+	var (
+		err error
+		b   bool
+	)
+	b, err = sliceList.AddAllIndex(0, sliceList2)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 6, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", 2, 3, "1", 2, 3}, sliceList.data)
+	assert.Equal(t, true, b)
 
-	_, err = sliceList.AddAllIndex(sliceList.size, sliceList2)
+	b, err = sliceList.AddAllIndex(sliceList.size, sliceList2)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 9, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
+	assert.Equal(t, true, b)
 
-	_, err = sliceList.AddAllIndex(1, sliceList2)
+	b, err = sliceList.AddAllIndex(1, sliceList2)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 12, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "1", 2, 3, 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
+	assert.Equal(t, true, b)
 
-	_, err = sliceList.AddAllIndex(-1, sliceList2)
+	b, err = sliceList.AddAllIndex(-1, sliceList2)
 	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, 12, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "1", 2, 3, 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
+	assert.Equal(t, false, b)
 
-	_, err = sliceList.AddAllIndex(sliceList.size+1, sliceList2)
+	b, err = sliceList.AddAllIndex(sliceList.size+1, sliceList2)
 	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, 12, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "1", 2, 3, 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
+	assert.Equal(t, false, b)
 
 	sliceList = &SliceList{
 		size: 0,
 		data: []collection.Element{},
 	}
-	_, err = sliceList.AddAllIndex(0, sliceList2)
+	b, err = sliceList.AddAllIndex(0, sliceList)
 	assert.Equal(t, nil, err)
+	assert.Equal(t, false, b)
 
 }
 
