@@ -20,6 +20,11 @@ package collection
 // Queue 队列接口
 type Queue interface {
 	Collection
+	// Add 添加指定元素
+	//
+	// 如果当前集合由于调用而更改, 则返回true.
+	// 如果此集合不允许重复并且已经包含指定的元素,则返回false.
+	Add(e Element) (bool, error)
 	// Offer 可以在不违反容量限制的情况下立即将指定的元素插入此队列
 	//
 	// 使用容量受限的队列时,通常最好使用add,因为add可能仅通过引发异常而无法插入元素.
@@ -30,7 +35,7 @@ type Queue interface {
 	Poll() Element
 	// Delete 检索并删除此队列的头,
 	//
-	// 此方法与poll不同之处仅在于，如果此队列为空，它将引发异常
+	// 此方法与poll不同之处仅在于,如果此队列为空,它将返回err.
 	Delete() (Element, error)
 	// Element 返回但不删除此队列的头
 	//

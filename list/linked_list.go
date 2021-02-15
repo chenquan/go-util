@@ -349,6 +349,7 @@ func (l *LinkedList) LastIndex(e collection.Element) int {
 }
 
 func (l *LinkedList) SubList(fromIndex, toIndex int) (collection.List, error) {
+	// TODO
 	panic("implement me")
 }
 
@@ -478,6 +479,7 @@ func (l *LinkedList) Slice() []collection.Element {
 }
 
 func (l *LinkedList) Iterator() collection.Iterator {
+	// TODO 重新实现
 	return &itrList{cursor: 0, lastRet: -1, data: l}
 }
 
