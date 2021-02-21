@@ -18,7 +18,6 @@
 package list
 
 import (
-	"fmt"
 	"github.com/chenquan/go-util/backend/collection"
 	"github.com/chenquan/go-util/errs"
 )
@@ -323,35 +322,6 @@ func (sliceList *SliceList) LastIndex(e collection.Element) (index int) {
 		}
 	}
 	return -1
-}
-
-// subListRangeCheck 检查 SubList 函数的参数范围
-func (sliceList *SliceList) subListRangeCheck(fromIndex, toIndex int) error {
-
-	if fromIndex < 0 {
-		return errs.NewIndexOutOfBoundsError(fmt.Sprintf("fromIndex = %d", fromIndex))
-	}
-	if toIndex > sliceList.size {
-		return errs.NewIndexOutOfBoundsError(fmt.Sprintf("toIndex = %d", toIndex))
-
-	}
-	if fromIndex > toIndex {
-		return errs.NewIndexOutOfBoundsError(fmt.Sprintf("fromIndex(%d) > toIndex(%d)", fromIndex, toIndex))
-	}
-	return nil
-}
-
-// SubList 返回此列表中指定的fromIndex(包括)和toIndex(不包括)之间的元素
-// 如果fromIndex和toIndex相等, 则返回的列表为空.
-func (sliceList *SliceList) SubList(fromIndex, toIndex int) (collection.List, error) {
-	if err := sliceList.subListRangeCheck(fromIndex, toIndex); err != nil {
-		return nil, err
-	}
-	return &SliceList{
-			size: toIndex - fromIndex,
-			data: sliceList.data[fromIndex:toIndex],
-		},
-		nil
 }
 
 // Iterator 返回当前集合中元素的迭代器

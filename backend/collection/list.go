@@ -46,9 +46,6 @@ type List interface {
 	Index(e Element) int
 	// LastIndex 返回此列表中指定元素的最后一次出现的索引,如果此列表不包含该元素，则返回-1
 	LastIndex(e Element) int
-	// SubList 返回此列表中指定的fromIndex(包括)和toIndex(不包括)之间的元素
-	// 如果fromIndex和toIndex相等, 则返回的列表为空.
-	SubList(fromIndex, toIndex int) (List, error)
 }
 
 type IteratorList interface {
