@@ -24,9 +24,9 @@ import (
 
 // linkedNode List of Nodes
 type linkedNode struct {
-	elem collection.Element // 数据元素
-	next *linkedNode        // 下一个节点
-	prev *linkedNode        // 上一个节点
+	elem collection.Element // elements
+	next *linkedNode        // Pointer to next node
+	prev *linkedNode        // Pointer to previous node
 }
 
 // LinkedList Doubly-linked list implementation of the List and Deque interfaces.
