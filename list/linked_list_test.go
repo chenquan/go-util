@@ -993,6 +993,6 @@ func Test_itrLinkedList(t *testing.T) {
 	assert.Equal(t, errs.IndexOutOfBound, err)
 	err = linkedList.Remove()
 	assert.Equal(t, errs.IllegalState, err)
-	assert.Equal(t, []collection.Element{1, 2, 3}, linkedToSlice(list))
+	assert.Equal(t, []collection.Element{}, linkedToSlice(list))
 
 }
