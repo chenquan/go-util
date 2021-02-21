@@ -17,8 +17,8 @@
 
 package collection
 
-type Element interface {
-}
+// Element 集合元素
+type Element interface{}
 
 // Collection 集合层次结构中的根接口
 // 集合表示一组对象,称为其元素.

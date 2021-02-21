@@ -18,7 +18,8 @@
 package list
 
 import (
-	"github.com/chenquan/go-util/collection/api/collection"
+	"github.com/chenquan/go-util/backend/collection"
+	"github.com/chenquan/go-util/errs"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -61,9 +62,9 @@ func Test_sliceListIterator(t *testing.T) {
 	next, err = l.Next()
 	assert.Equal(t, false, hasNext)
 	assert.Equal(t, nil, next)
-	assert.Equal(t, NoSuchElement, err)
+	assert.Equal(t, errs.NoSuchElement, err)
 
 	err2 = l.Remove()
-	assert.Equal(t, IllegalState, err2)
+	assert.Equal(t, errs.IllegalState, err2)
 
 }

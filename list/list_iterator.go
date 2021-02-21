@@ -17,7 +17,10 @@
 
 package list
 
-import "github.com/chenquan/go-util/collection/api/collection"
+import (
+	"github.com/chenquan/go-util/backend/collection"
+	"github.com/chenquan/go-util/errs"
+)
 
 // itrList 实现 collection.Iterator 接口
 type itrList struct {
@@ -34,7 +37,7 @@ func (s *itrList) HasNext() bool {
 // Next 返回当前迭代中的下一个元素
 func (s *itrList) Next() (collection.Element, error) {
 	if s.cursor >= s.data.Size() {
-		return nil, NoSuchElement
+		return nil, errs.NoSuchElement
 	}
 	s.lastRet = s.cursor
 	s.cursor++
@@ -46,7 +49,7 @@ func (s *itrList) Next() (collection.Element, error) {
 // 每次调用 Next 方法,才可以调用一次此方法.
 func (s *itrList) Remove() error {
 	if s.lastRet < 0 {
-		return IllegalState
+		return errs.IllegalState
 	}
 	_, err := s.data.RemoveIndex(s.lastRet)
 	if err == nil {

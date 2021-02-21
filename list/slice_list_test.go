@@ -18,7 +18,8 @@
 package list
 
 import (
-	"github.com/chenquan/go-util/collection/api/collection"
+	"github.com/chenquan/go-util/backend/collection"
+	"github.com/chenquan/go-util/errs"
 	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
@@ -520,38 +521,47 @@ func TestSliceList_AddAllIndex(t *testing.T) {
 		size: 3,
 		data: []collection.Element{"1", 2, 3},
 	}
-	var err error
-	err = sliceList.AddAllIndex(0, sliceList2)
+	var (
+		err error
+		b   bool
+	)
+	b, err = sliceList.AddAllIndex(0, sliceList2)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 6, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", 2, 3, "1", 2, 3}, sliceList.data)
+	assert.Equal(t, true, b)
 
-	err = sliceList.AddAllIndex(sliceList.size, sliceList2)
+	b, err = sliceList.AddAllIndex(sliceList.size, sliceList2)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 9, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
+	assert.Equal(t, true, b)
 
-	err = sliceList.AddAllIndex(1, sliceList2)
+	b, err = sliceList.AddAllIndex(1, sliceList2)
 	assert.Equal(t, nil, err)
 	assert.Equal(t, 12, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "1", 2, 3, 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
+	assert.Equal(t, true, b)
 
-	err = sliceList.AddAllIndex(-1, sliceList2)
-	assert.Equal(t, IndexOutOfBound, err)
+	b, err = sliceList.AddAllIndex(-1, sliceList2)
+	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, 12, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "1", 2, 3, 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
+	assert.Equal(t, false, b)
 
-	err = sliceList.AddAllIndex(sliceList.size+1, sliceList2)
-	assert.Equal(t, IndexOutOfBound, err)
+	b, err = sliceList.AddAllIndex(sliceList.size+1, sliceList2)
+	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, 12, sliceList.size)
 	assert.Equal(t, []collection.Element{"1", "1", 2, 3, 2, 3, "1", 2, 3, "1", 2, 3}, sliceList.data)
+	assert.Equal(t, false, b)
 
 	sliceList = &SliceList{
 		size: 0,
 		data: []collection.Element{},
 	}
-	err = sliceList.AddAllIndex(0, sliceList2)
+	b, err = sliceList.AddAllIndex(0, sliceList)
 	assert.Equal(t, nil, err)
+	assert.Equal(t, false, b)
 
 }
 
@@ -641,13 +651,13 @@ func TestSliceList_Set(t *testing.T) {
 		data: []collection.Element{"1", 2, 3},
 	}
 	var err error
-	err = sliceList.Set(0, "111")
+	_, err = sliceList.Set(0, "111")
 	assert.Equal(t, nil, err)
 	assert.Equal(t, []collection.Element{"111", 2, 3}, sliceList.data)
 	assert.Equal(t, 3, sliceList.size)
 
-	err = sliceList.Set(3, "111")
-	assert.Equal(t, IndexOutOfBound, err)
+	_, err = sliceList.Set(3, "111")
+	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, []collection.Element{"111", 2, 3}, sliceList.data)
 	assert.Equal(t, 3, sliceList.size)
 
@@ -655,8 +665,8 @@ func TestSliceList_Set(t *testing.T) {
 		size: 0,
 		data: []collection.Element{},
 	}
-	err = sliceList.Set(0, "1")
-	assert.Equal(t, IndexOutOfBound, err)
+	_, err = sliceList.Set(0, "1")
+	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, []collection.Element{}, sliceList.data)
 	assert.Equal(t, 0, sliceList.size)
 }
@@ -684,7 +694,7 @@ func TestSliceList_AddIndex(t *testing.T) {
 	assert.Equal(t, []collection.Element{1111, 1, "1111"}, sliceList.data)
 
 	err = sliceList.AddIndex(8, "1111")
-	assert.Equal(t, IndexOutOfBound, err)
+	assert.Equal(t, errs.IndexOutOfBound, err)
 	assert.Equal(t, 3, sliceList.size)
 	assert.Equal(t, []collection.Element{1111, 1, "1111"}, sliceList.data)
 
@@ -881,138 +891,6 @@ func TestSliceList_LastIndex(t *testing.T) {
 			}
 			if gotIndex := sliceList.LastIndex(tt.args.e); gotIndex != tt.wantIndex {
 				t.Errorf("LastIndex() = %v, want %v", gotIndex, tt.wantIndex)
-			}
-		})
-	}
-}
-
-func TestSliceList_SubList(t *testing.T) {
-	type fields struct {
-		size int
-		data []collection.Element
-	}
-	type args struct {
-		fromIndex int
-		toIndex   int
-	}
-	tests := []struct {
-		name     string
-		fields   fields
-		args     args
-		wantList collection.List
-		wantErr  bool
-	}{
-		{
-			"1",
-			fields{
-				size: 0,
-				data: []collection.Element{},
-			},
-			args{
-				fromIndex: 0,
-				toIndex:   0,
-			},
-			&SliceList{0, []collection.Element{}},
-			false,
-		}, {
-			"2",
-			fields{
-				size: 0,
-				data: []collection.Element{},
-			},
-			args{
-				fromIndex: 1,
-				toIndex:   0,
-			},
-			nil,
-			true,
-		}, {
-			"3",
-			fields{
-				size: 0,
-				data: []collection.Element{},
-			},
-			args{
-				fromIndex: -1,
-				toIndex:   0,
-			},
-			nil,
-			true,
-		}, {
-			"4",
-			fields{
-				size: 2,
-				data: []collection.Element{1, 2},
-			},
-			args{
-				fromIndex: 0,
-				toIndex:   2,
-			},
-			&SliceList{2, []collection.Element{1, 2}},
-			false,
-		}, {
-			"5",
-			fields{
-				size: 5,
-				data: []collection.Element{1, 2, 3, 4, 5},
-			},
-			args{
-				fromIndex: 2,
-				toIndex:   2,
-			},
-			&SliceList{0, []collection.Element{}},
-			false,
-		}, {
-			"6",
-			fields{
-				size: 5,
-				data: []collection.Element{1, 2, 3, 4, 5},
-			},
-			args{
-				fromIndex: 1,
-				toIndex:   2,
-			},
-			&SliceList{1, []collection.Element{2}},
-			false,
-		}, {
-			"7",
-			fields{
-				size: 5,
-				data: []collection.Element{1, 2, 3, 4, 5},
-			},
-			args{
-				fromIndex: 1,
-				toIndex:   5,
-			},
-			&SliceList{4, []collection.Element{2, 3, 4, 5}},
-			false,
-		}, {
-			"8",
-			fields{
-				size: 5,
-				data: []collection.Element{1, 2, 3, 4, 5},
-			},
-			args{
-				fromIndex: 1,
-				toIndex:   6,
-			},
-			nil,
-			true,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			sliceList := &SliceList{
-				size: tt.fields.size,
-				data: tt.fields.data,
-			}
-			gotList, err := sliceList.SubList(tt.args.fromIndex, tt.args.toIndex)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("SubList() errs = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(gotList, tt.wantList) {
-				t.Errorf("SubList() gotList = %v, want %v", gotList, tt.wantList)
 			}
 		})
 	}

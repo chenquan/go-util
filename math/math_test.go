@@ -17,7 +17,9 @@
 
 package math
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestMaxInt(t *testing.T) {
 	type args struct {

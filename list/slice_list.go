@@ -18,10 +18,8 @@
 package list
 
 import (
-	"errors"
-	"fmt"
-	"github.com/chenquan/go-util/collection/api/collection"
-	"github.com/chenquan/go-util/collection/errs"
+	"github.com/chenquan/go-util/backend/collection"
+	"github.com/chenquan/go-util/errs"
 )
 
 var _ collection.List = (*SliceList)(nil)
@@ -29,13 +27,6 @@ var _ collection.List = (*SliceList)(nil)
 const (
 	// 默认列表容量
 	defaultCapacity = 10
-)
-
-var (
-	//NotFound        = errors.New("not found")
-	IndexOutOfBound = errors.New("index out of bound")
-	NoSuchElement   = errors.New("no such element")
-	IllegalState    = errors.New("illegal state")
 )
 
 // NewSliceListDefault 新增切片列表
@@ -66,6 +57,7 @@ func NewSliceList(initialCapacity int) *SliceList {
 }
 
 // SliceList 实现 collection.List 接口
+// 注意 SliceList 协程不安全,不能用于高并发.
 type SliceList struct {
 	size int                  // 列表大小
 	data []collection.Element // 数据
@@ -208,13 +200,16 @@ func (sliceList *SliceList) Clear() error {
 }
 
 // Equals 比较指定对象与此集合的相等性
-func (sliceList *SliceList) Equals(collection collection.Collection) (b bool) {
+func (sliceList *SliceList) Equals(c collection.Collection) (b bool) {
 
-	if sliceList == collection {
+	if sliceList == c {
 		return true
 	}
+	if sliceList.size != c.Size() {
+		return false
+	}
 	iterator1 := sliceList.Iterator()
-	iterator2 := collection.Iterator()
+	iterator2 := c.Iterator()
 	for iterator1.HasNext() && iterator2.HasNext() {
 		e1, _ := iterator1.Next()
 
@@ -231,7 +226,7 @@ func (sliceList *SliceList) Equals(collection collection.Collection) (b bool) {
 // rangeCheckForAdd 检查新增操作索引范围
 func (sliceList *SliceList) rangeCheckForAdd(index int) error {
 	if index > sliceList.size || index < 0 {
-		return IndexOutOfBound
+		return errs.IndexOutOfBound
 	}
 	return nil
 }
@@ -241,9 +236,9 @@ func (sliceList *SliceList) rangeCheckForAdd(index int) error {
 // 将当前在该位置的元素（如果有）和任何后续元素右移(增加其索引)
 // 新元素将按照指定集合的迭代器返回的顺序显示在此列表中,
 // 如果在操作进行过程中修改了指定的集合,则此操作的行为是不确定的.
-func (sliceList *SliceList) AddAllIndex(index int, c collection.Collection) error {
+func (sliceList *SliceList) AddAllIndex(index int, c collection.Collection) (bool, error) {
 	if err := sliceList.rangeCheckForAdd(index); err != nil {
-		return err
+		return false, err
 	}
 	slice := c.Slice()
 	if c.Size() != 0 {
@@ -251,15 +246,17 @@ func (sliceList *SliceList) AddAllIndex(index int, c collection.Collection) erro
 		copy(sliceList.data[index+c.Size():], sliceList.data[index:])
 		copy(sliceList.data[index:], slice)
 		sliceList.size += c.Size()
+		return true, nil
+
 	}
-	return nil
+	return false, nil
 }
 
 // Get 返回此列表中指定位置的元素
 func (sliceList *SliceList) Get(index int) (e collection.Element, err error) {
 	size := sliceList.size
 	if index >= size || index < 0 {
-		err = IndexOutOfBound
+		err = errs.IndexOutOfBound
 	} else {
 		e = sliceList.data[index]
 	}
@@ -267,12 +264,13 @@ func (sliceList *SliceList) Get(index int) (e collection.Element, err error) {
 }
 
 // Set 用指定的元素替换此列表中指定位置的元素
-func (sliceList *SliceList) Set(index int, e collection.Element) (err error) {
+func (sliceList *SliceList) Set(index int, e collection.Element) (elem collection.Element, err error) {
 	size := sliceList.size
 	if index >= size {
-		err = IndexOutOfBound
+		err = errs.IndexOutOfBound
 	} else {
 		sliceList.data[index] = e
+		elem = e
 	}
 	return
 }
@@ -296,7 +294,7 @@ func (sliceList *SliceList) AddIndex(index int, e collection.Element) error {
 // 将所有后续元素向左移动(即将其索引中减去1),并返回从列表中删除的元素.
 func (sliceList *SliceList) RemoveIndex(index int) (collection.Element, error) {
 	if index >= sliceList.size {
-		return nil, IndexOutOfBound
+		return nil, errs.IndexOutOfBound
 	}
 	element := sliceList.data[index]
 	sliceList.data = append(sliceList.data[:index], sliceList.data[index+1:]...)
@@ -326,42 +324,13 @@ func (sliceList *SliceList) LastIndex(e collection.Element) (index int) {
 	return -1
 }
 
-// subListRangeCheck 检查 SubList 函数的参数范围
-func (sliceList *SliceList) subListRangeCheck(fromIndex, toIndex int) error {
-
-	if fromIndex < 0 {
-		return errs.NewIndexOutOfBoundsError(fmt.Sprintf("fromIndex = %d", fromIndex))
-	}
-	if toIndex > sliceList.size {
-		return errs.NewIndexOutOfBoundsError(fmt.Sprintf("toIndex = %d", toIndex))
-
-	}
-	if fromIndex > toIndex {
-		return errs.NewIndexOutOfBoundsError(fmt.Sprintf("fromIndex(%d) > toIndex(%d)", fromIndex, toIndex))
-	}
-	return nil
-}
-
-// SubList 返回此列表中指定的fromIndex(包括)和toIndex(不包括)之间的元素
-// 如果fromIndex和toIndex相等, 则返回的列表为空.
-func (sliceList *SliceList) SubList(fromIndex, toIndex int) (collection.List, error) {
-	if err := sliceList.subListRangeCheck(fromIndex, toIndex); err != nil {
-		return nil, err
-	}
-	return &SliceList{
-			size: toIndex - fromIndex,
-			data: sliceList.data[fromIndex:toIndex],
-		},
-		nil
-}
-
 // Iterator 返回当前集合中元素的迭代器
 //
 // 如果当前集合是有序的,则保证返回的迭代器是有序的.
 func (sliceList *SliceList) Iterator() collection.Iterator {
 	return &itrList{
-		lastRet: -1,
 		cursor:  0,
+		lastRet: -1,
 		data:    sliceList,
 	}
 }
