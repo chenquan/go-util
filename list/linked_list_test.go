@@ -917,34 +917,6 @@ func TestLinkedList_Delete(t *testing.T) {
 
 }
 
-// Benchmark
-func BenchmarkNewLinkedList(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_ = NewLinkedList()
-	}
-}
-func BenchmarkLinkedList_Add(b *testing.B) {
-	list := NewLinkedList()
-	b.ReportAllocs()
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_, _ = list.Add(i)
-	}
-}
-
-func BenchmarkLinkedList_AddAll(b *testing.B) {
-	list := NewLinkedList()
-	listDefault := NewSliceListDefault()
-	for i := 0; i < 1; i++ {
-		_, _ = listDefault.Add(i)
-	}
-	b.ReportAllocs()
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_, _ = list.AddAll(listDefault)
-	}
-}
-
 func Test_itrLinkedList(t *testing.T) {
 	list := genLinkedList([]collection.Element{1, 2, 3, 4}...)
 	linkedList := &itrLinkedList{
