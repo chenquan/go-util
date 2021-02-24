@@ -30,7 +30,7 @@ type SliceDeQueue struct {
 }
 
 func (s *SliceDeQueue) Size() int {
-	panic("")
+	return (s.tail-s.head)&len(s.elements) - 1
 }
 
 func (s *SliceDeQueue) IsEmpty() bool {
@@ -38,15 +38,38 @@ func (s *SliceDeQueue) IsEmpty() bool {
 }
 
 func (s *SliceDeQueue) Contains(e collection.Element) (bool, error) {
-	panic("")
+	if e == nil {
+		return false, nil
+	}
+	n := len(s.elements) - 1
+	i := s.head
+	x := s.elements[i]
+	for ; x != nil; x = s.elements[i] {
+		if x == e {
+			return true, nil
+		}
+		i = (i + 1) & n
+	}
+	return false, nil
 }
 
 func (s *SliceDeQueue) Add(e collection.Element) (bool, error) {
-	panic("implement me")
+	return true, s.AddLast(e)
 }
 
 func (s *SliceDeQueue) Remove(e collection.Element) (bool, error) {
-	panic("implement me")
+	if e == nil {
+		return false, errs.NilPointer
+	}
+	iterator := s.Iterator()
+	for iterator.HasNext() {
+		next, _ := iterator.Next()
+		if next == e {
+			_ = iterator.Remove()
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 func (s *SliceDeQueue) ContainsAll(collection collection.Collection) (bool, error) {
@@ -74,7 +97,13 @@ func (s *SliceDeQueue) Equals(collection collection.Collection) bool {
 }
 
 func (s *SliceDeQueue) Slice() []collection.Element {
-	panic("implement me")
+	n := len(s.elements)
+	h := s.head
+	r := n - h
+	elements := make([]collection.Element, n)
+	copy(elements[0:r], s.elements[h:n])
+	copy(elements[r:r+h], s.elements[0:h])
+	return elements
 }
 
 func (s *SliceDeQueue) Iterator() collection.Iterator {
@@ -82,15 +111,20 @@ func (s *SliceDeQueue) Iterator() collection.Iterator {
 }
 
 func (s *SliceDeQueue) Offer(e collection.Element) (bool, error) {
-	panic("implement me")
+	err := s.AddLast(e)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 func (s *SliceDeQueue) Poll() collection.Element {
-	panic("implement me")
+	element, _ := s.RemoveFirst()
+	return element
 }
 
 func (s *SliceDeQueue) Delete() (collection.Element, error) {
-	panic("implement me")
+	return s.RemoveFirst()
 }
 
 func (s *SliceDeQueue) Element() (collection.Element, error) {
@@ -167,7 +201,15 @@ func (s *SliceDeQueue) GetLast() (collection.Element, error) {
 }
 
 func (s *SliceDeQueue) RemoveFirstOccurrence(e collection.Element) (bool, error) {
-	panic("implement me")
+	i := s.head
+	x := s.elements[i]
+	for ; x != nil; x = s.elements[i] {
+		if e == x {
+			// TODO
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 func (s *SliceDeQueue) RemoveLastOccurrence(e collection.Element) (bool, error) {
