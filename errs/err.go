@@ -22,10 +22,11 @@ import "errors"
 
 var (
 	//NotFound        = errors.New("not found")
-	IndexOutOfBound = errors.New("index out of bound")
-	NoSuchElement   = errors.New("no such element")
-	IllegalState    = errors.New("illegal state")
-	NilPointer      = errors.New("nil pointer")
+	IndexOutOfBound        = errors.New("index out of bound")
+	NoSuchElement          = errors.New("no such element")
+	IllegalState           = errors.New("illegal state")
+	NilPointer             = errors.New("nil pointer")
+	ConcurrentModification = errors.New("concurrent Modification")
 )
 
 // indexOutOfBoundsException 实现 errs 接口

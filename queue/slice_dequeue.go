@@ -58,9 +58,6 @@ func (s *SliceDeQueue) Add(e collection.Element) (bool, error) {
 }
 
 func (s *SliceDeQueue) Remove(e collection.Element) (bool, error) {
-	if e == nil {
-		return false, errs.NilPointer
-	}
 	iterator := s.Iterator()
 	for iterator.HasNext() {
 		next, _ := iterator.Next()
@@ -72,28 +69,109 @@ func (s *SliceDeQueue) Remove(e collection.Element) (bool, error) {
 	return false, nil
 }
 
-func (s *SliceDeQueue) ContainsAll(collection collection.Collection) (bool, error) {
-	panic("implement me")
+func (s *SliceDeQueue) ContainsAll(c collection.Collection) (bool, error) {
+	if c == nil {
+		return false, errs.NilPointer
+	}
+	iterator := c.Iterator()
+	for iterator.HasNext() {
+		next, _ := iterator.Next()
+		if contains, _ := s.Contains(next); !contains {
+			return false, nil
+		}
+	}
+	return false, nil
 }
 
-func (s *SliceDeQueue) AddAll(collection collection.Collection) (bool, error) {
-	panic("implement me")
+func (s *SliceDeQueue) AddAll(c collection.Collection) (bool, error) {
+	if c == nil {
+		return false, errs.NilPointer
+	}
+	elements := c.Slice()
+	modified := false
+	for _, element := range elements {
+		add, _ := s.Add(element)
+		if add {
+			modified = true
+		}
+	}
+	return modified, nil
 }
 
-func (s *SliceDeQueue) RemoveAll(collection collection.Collection) (bool, error) {
-	panic("implement me")
+func (s *SliceDeQueue) RemoveAll(c collection.Collection) (bool, error) {
+	if c == nil {
+		return false, errs.NilPointer
+	}
+	modified := false
+
+	iterator := s.Iterator()
+	for iterator.HasNext() {
+		e, _ := iterator.Next()
+		contains, err := c.Contains(e)
+		if err != nil {
+			return false, err
+		}
+		if contains {
+			_ = iterator.Remove()
+			modified = true
+		}
+	}
+	return modified, nil
 }
 
-func (s *SliceDeQueue) RetainAll(collection collection.Collection) (bool, error) {
-	panic("implement me")
+func (s *SliceDeQueue) RetainAll(c collection.Collection) (bool, error) {
+	if c == nil {
+		return false, errs.NilPointer
+	}
+	modified := false
+
+	iterator := s.Iterator()
+	for iterator.HasNext() {
+		e, _ := iterator.Next()
+		contains, err := c.Contains(e)
+		if err != nil {
+			return false, err
+		}
+		if !contains {
+			_ = iterator.Remove()
+			modified = true
+		}
+	}
+	return modified, nil
 }
 
 func (s *SliceDeQueue) Clear() error {
-	panic("implement me")
+	h, t := s.head, s.tail
+	if t != h {
+		s.tail, s.head = 0, 0
+		mask := len(s.elements) - 1
+		i := h
+		for i != t {
+			// help cg
+			s.elements[i] = nil
+			i = (i + 1) & mask
+		}
+	}
+	return nil
 }
 
-func (s *SliceDeQueue) Equals(collection collection.Collection) bool {
-	panic("implement me")
+func (s *SliceDeQueue) Equals(c collection.Collection) bool {
+	if s == c {
+		return true
+	}
+	if s.Size() != c.Size() {
+		return false
+	}
+	i1 := s.Iterator()
+	i2 := c.Iterator()
+	for i1.HasNext() && i2.HasNext() {
+		e1, _ := i1.Next()
+		e2, _ := i2.Next()
+		if e1 != e2 {
+			return false
+		}
+	}
+	return true
 }
 
 func (s *SliceDeQueue) Slice() []collection.Element {
@@ -107,7 +185,7 @@ func (s *SliceDeQueue) Slice() []collection.Element {
 }
 
 func (s *SliceDeQueue) Iterator() collection.Iterator {
-	panic("implement me")
+	return &sliceDequeueItr{data: s, cursor: s.head, fence: s.tail, lastRet: -1}
 }
 
 func (s *SliceDeQueue) Offer(e collection.Element) (bool, error) {
@@ -203,17 +281,70 @@ func (s *SliceDeQueue) GetLast() (collection.Element, error) {
 func (s *SliceDeQueue) RemoveFirstOccurrence(e collection.Element) (bool, error) {
 	i := s.head
 	x := s.elements[i]
+	mask := len(s.elements) - 1
 	for ; x != nil; x = s.elements[i] {
 		if e == x {
-			// TODO
+			if _, err := s.delete(i); err != nil {
+				return false, err
+			}
 			return true, nil
 		}
+		i = (i + 1) & mask
 	}
 	return false, nil
 }
+func (s *SliceDeQueue) delete(index int) (bool, error) {
+	h := s.head
+	t := s.tail
+	mask := len(s.elements) - 1
+	front := (index - h) & mask
+	back := (t - index) & mask
+	if front >= ((t - h) & mask) {
+		return false, errs.ConcurrentModification
+	}
+	if front < back {
+		if h <= index {
+			copy(s.elements[h+1:h+1+front+1], s.elements[h:h+front+1])
+		} else {
+			copy(s.elements[1:index+2], s.elements[:index+1])
+			s.elements[0] = mask
+			copy(s.elements[h+1:h+mask-h+1], s.elements[h:h+mask-h+1])
+		}
+		s.elements[h] = nil
+		s.head = (h + 1) & mask
+		return true, nil
+	} else {
+		if index < t {
+			copy(s.elements[index:index+back+1], s.elements[index+1:index+1+back+1])
+			s.tail = t - 1
+		} else {
+			copy(s.elements[index:index+mask-index+1], s.elements[index+1:index+1+mask-index+1])
+			s.elements[mask] = s.elements[0]
+			copy(s.elements[:t+1], s.elements[1:1+t+1])
+			s.tail = (t - 1) & mask
+		}
+	}
+
+	return true, nil
+}
 
 func (s *SliceDeQueue) RemoveLastOccurrence(e collection.Element) (bool, error) {
-	panic("implement me")
+	if e == nil {
+		return false, nil
+	}
+	mask := len(s.elements) - 1
+	i := (s.tail - 1) & mask
+
+	for x := s.elements[i]; x != nil; x = s.elements[i] {
+		if x == e {
+			if _, err := s.delete(i); err != nil {
+				return false, err
+			}
+			return true, nil
+		}
+		i = (i - 1) & mask
+	}
+	return false, nil
 }
 
 func (s *SliceDeQueue) Push(e collection.Element) error {
@@ -242,5 +373,43 @@ func (s *SliceDeQueue) doubleCapacity() error {
 	s.elements = elements
 	s.head = 0
 	s.tail = n
+	return nil
+}
+
+type sliceDequeueItr struct {
+	data    *SliceDeQueue
+	cursor  int
+	fence   int
+	lastRet int
+}
+
+func (s *sliceDequeueItr) HasNext() bool {
+	return s.lastRet != s.fence
+}
+
+func (s *sliceDequeueItr) Next() (collection.Element, error) {
+	if !s.HasNext() {
+		return nil, errs.NoSuchElement
+	}
+	element := s.data.elements[s.cursor]
+	if s.HasNext() || element == nil {
+		return nil, errs.ConcurrentModification
+	}
+	s.lastRet = s.cursor
+	s.cursor = (s.cursor + 1) & (len(s.data.elements) - 1)
+	return element, nil
+}
+
+func (s *sliceDequeueItr) Remove() error {
+	if s.lastRet < 0 {
+		return errs.IllegalState
+	}
+	if b, err := s.data.delete(s.cursor); err != nil {
+		return err
+	} else if b {
+		s.cursor = (s.cursor - 1) & (len(s.data.elements) - 1)
+		s.fence = s.data.tail
+	}
+	s.lastRet = -1
 	return nil
 }
