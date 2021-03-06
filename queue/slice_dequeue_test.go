@@ -15,22 +15,18 @@
  *
  */
 
-package collection
+package queue
 
-// DeQueue 双端队列
-type DeQueue interface {
-	// 实现队列接口
-	Queue
-	AddFirst(e Element) error
-	AddLast(e Element) error
-	RemoveFirst() (Element, error)
-	RemoveLast() (Element, error)
-	GetFirst() (Element, error)
-	GetLast() (Element, error)
-	RemoveFirstOccurrence(e Element) (bool, error)
-	RemoveLastOccurrence(e Element) (bool, error)
-	// Stack methods
-	Push(e Element) error
-	Pop() (Element, error)
-	DescendingIterator() Iterator
+import (
+	"fmt"
+	"testing"
+)
+
+func Test1(t *testing.T) {
+	s := make([]int, 1, 2)
+	fmt.Println(s)
+	s[0] = 1
+	//s[1]=3
+	copy(s, []int{33, 3})
+	fmt.Println(s)
 }
